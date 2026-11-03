@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { Calculator } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 import { usePlatform } from '@/features/auth/usePlatform'
 
 /** Pages publiques (connexion, inscription…) : panneau de marque à gauche, formulaire à droite. */
@@ -10,9 +10,8 @@ export function AuthLayout() {
   return (
     <div className="grid min-h-screen bg-surface lg:grid-cols-[54fr_46fr]">
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-admin to-brand-500 px-[9%] py-16 text-white lg:flex">
-        <div className="relative z-10 flex items-center gap-2.5 text-xl font-bold">
-          <Calculator className="size-7" aria-hidden="true" />
-          {name}
+        <div className="relative z-10 w-fit rounded-card bg-white px-6 py-3.5 shadow-overlay">
+          <Logo className="h-11" />
         </div>
         <div className="relative z-10 max-w-md">
           <p className="mb-5 text-5xl leading-tight font-bold">
@@ -27,14 +26,13 @@ export function AuthLayout() {
         </p>
         <div
           aria-hidden="true"
-          className="absolute -right-20 -bottom-48 size-[115] rounded-full border border-white/15 shadow-[0_0_0_48px_rgb(255_255_255/0.035),0_0_0_98px_rgb(255_255_255/0.025)]"
+          className="absolute -right-20 -bottom-48 size-115 rounded-full border border-white/15 shadow-[0_0_0_48px_rgb(255_255_255/0.035),0_0_0_98px_rgb(255_255_255/0.025)]"
         />
       </aside>
 
       <div className="flex flex-col">
-        <header className="flex items-center gap-2 bg-linear-to-br from-admin to-brand-500 px-6 py-5 font-bold text-white lg:hidden">
-          <Calculator className="size-6" aria-hidden="true" />
-          {name}
+        <header className="flex items-center border-b border-line bg-surface px-6 py-4 lg:hidden">
+          <Logo className="h-9" />
         </header>
         <main className="flex flex-1 items-center justify-center px-6 py-10 sm:px-9">
           <div className="w-full max-w-md">

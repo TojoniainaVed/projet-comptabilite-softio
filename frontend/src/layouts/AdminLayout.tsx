@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Logo } from '@/components/Logo'
 import {
   Building2,
   ClipboardList,
@@ -6,7 +7,6 @@ import {
   LayoutDashboard,
   MonitorSmartphone,
   Settings,
-  ShieldCheck,
   Users,
   ArrowLeftRight,
 } from 'lucide-react'
@@ -47,7 +47,9 @@ export function AdminLayout() {
       nav={nav}
       brand={
         <span className="flex items-center gap-2">
-          <ShieldCheck className="size-5" aria-hidden="true" />
+          <span className="rounded-control bg-white px-2 py-1">
+            <Logo className="h-6" />
+          </span>
           Administration
         </span>
       }

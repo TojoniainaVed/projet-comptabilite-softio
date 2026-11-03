@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
+import { Logo } from '@/components/Logo'
 import {
   BookOpen,
-  Building2,
   FileText,
   Landmark,
   LayoutDashboard,
@@ -60,8 +60,8 @@ export function AppLayout() {
       nav={nav}
       brand={
         <span className="flex items-center gap-2">
-          <Building2 className="size-5 text-brand-600" aria-hidden="true" />
-          Softio Comptabilité
+          <Logo className="h-8" />
+          <span className="text-xs font-medium text-ink-muted">Comptabilité</span>
         </span>
       }
       footerLink={

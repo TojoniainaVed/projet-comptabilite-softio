@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class JournalEntryLine extends Model
 {
+    public $timestamps = false;
     protected $fillable = ['journal_entry_id', 'account_id', 'label', 'debit', 'credit'];
 
     protected function casts(): array

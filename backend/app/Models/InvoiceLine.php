@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InvoiceLine extends Model
 {
+    public $timestamps = false;
     protected $fillable = [
         'invoice_id', 'account_id', 'description', 'quantity', 'unit_price',
         'tax_rate', 'net_amount', 'tax_amount',

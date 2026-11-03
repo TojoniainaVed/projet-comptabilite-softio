@@ -23,8 +23,6 @@
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_STORE" value="array"/>
-        <!-- SQLite en mémoire par défaut (rapide). Pour tester sur PostgreSQL :
-             DB_CONNECTION=pgsql DB_DATABASE=softio_test php artisan test -->
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
         <env name="LOG_LEVEL" value="error"/>
