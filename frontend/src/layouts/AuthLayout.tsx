@@ -10,8 +10,8 @@ export function AuthLayout() {
   return (
     <div className="grid min-h-screen bg-surface lg:grid-cols-[54fr_46fr]">
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-admin to-brand-500 px-[9%] py-16 text-white lg:flex">
-        <div className="relative z-10 w-fit rounded-card bg-white px-6 py-3.5 shadow-overlay">
-          <Logo className="h-11" />
+        <div className="relative z-10 w-fit rounded-card bg-white px-6 py-3.5 shadow-overlay  top-40 left-5">
+          <Logo className="h-18" />
         </div>
         <div className="relative z-10 max-w-md">
           <p className="mb-5 text-5xl leading-tight font-bold">
