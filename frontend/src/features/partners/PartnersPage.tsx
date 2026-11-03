@@ -1,7 +1,7 @@
 import { useState, type ComponentProps } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Pencil, Plus } from 'lucide-react'
+import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { z } from 'zod'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
@@ -10,6 +10,7 @@ import { DataTable, type Column } from '@/components/ui/DataTable'
 import { Pagination } from '@/components/ui/Pagination'
 import { SearchInput } from '@/components/ui/SearchInput'
 import { Modal } from '@/components/ui/Modal'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { FormField } from '@/components/ui/FormField'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
@@ -42,7 +43,22 @@ export function PartnersPage({ kind }: { kind: 'customer' | 'supplier' }) {
   const { can } = useAuth()
   const list = useListParams()
   const query = api.useList({ ...list.params, per_page: 25 })
+  const toast = useToast()
+  const remove = api.useRemove()
   const [editing, setEditing] = useState<Partner | 'new' | null>(null)
+  const [deleting, setDeleting] = useState<Partner | null>(null)
+
+  const confirmDelete = async () => {
+    if (!deleting) return
+    try {
+      await remove.mutateAsync(deleting.id)
+      toast.success(`${deleting.name} supprimé.`)
+    } catch (error) {
+      toast.error(errorMessage(error))
+    } finally {
+      setDeleting(null)
+    }
+  }
 
   const columns: Column<Partner>[] = [
     { key: 'name', header: 'Nom', cell: (p) => <span className="font-medium">{p.name}</span> },
@@ -57,15 +73,26 @@ export function PartnersPage({ kind }: { kind: 'customer' | 'supplier' }) {
             header: 'Actions',
             align: 'right' as const,
             cell: (p: Partner) => (
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={<Pencil className="size-4" aria-hidden="true" />}
-                onClick={() => setEditing(p)}
-                aria-label={`Modifier ${p.name}`}
-              >
-                Modifier
-              </Button>
+              <div className="flex justify-end gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={<Pencil className="size-4" aria-hidden="true" />}
+                  onClick={() => setEditing(p)}
+                  aria-label={`Modifier ${p.name}`}
+                >
+                  Modifier
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={<Trash2 className="size-4" aria-hidden="true" />}
+                  onClick={() => setDeleting(p)}
+                  aria-label={`Supprimer ${p.name}`}
+                >
+                  Supprimer
+                </Button>
+              </div>
             ),
           },
         ]
@@ -109,6 +136,16 @@ export function PartnersPage({ kind }: { kind: 'customer' | 'supplier' }) {
         <Pagination meta={query.data?.meta} onPageChange={list.setPage} />
       </Card>
       <PartnerFormModal kind={kind} partner={editing} onClose={() => setEditing(null)} />
+      <ConfirmDialog
+        open={deleting !== null}
+        title={`Supprimer le ${noun}`}
+        message={`${deleting?.name ?? ''} sera définitivement supprimé. Si ce ${noun} a déjà des factures ou des dépenses, la suppression est refusée : désactivez-le plutôt.`}
+        confirmLabel="Supprimer"
+        danger
+        loading={remove.isPending}
+        onCancel={() => setDeleting(null)}
+        onConfirm={() => void confirmDelete()}
+      />
     </>
   )
 }

@@ -1,4 +1,5 @@
-import { Plus } from 'lucide-react'
+import { useState } from 'react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
@@ -8,12 +9,14 @@ import { Pagination } from '@/components/ui/Pagination'
 import { SearchInput } from '@/components/ui/SearchInput'
 import { Select } from '@/components/ui/Select'
 import { Checkbox } from '@/components/ui/Checkbox'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { useToast } from '@/components/feedback/Toast'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useListParams } from '@/hooks/useListParams'
 import { InvoiceStatusBadge } from '@/components/ui/StatusBadges'
 import { errorMessage } from '@/lib/form-errors'
 import { formatDate, formatMoney } from '@/lib/utils'
-import { invoiceBasePath, invoicesApi } from '@/features/invoices/api'
+import { invoiceBasePath, invoicesApi, useInvoiceActions } from '@/features/invoices/api'
 import type { Invoice, InvoiceType } from '@/types/api'
 
 export function InvoicesPage({ kind }: { kind: InvoiceType }) {
@@ -23,6 +26,21 @@ export function InvoicesPage({ kind }: { kind: InvoiceType }) {
   const list = useListParams()
   const query = invoicesApi.useList({ ...list.params, type: kind, per_page: 25 })
   const base = invoiceBasePath(kind)
+  const toast = useToast()
+  const actions = useInvoiceActions()
+  const [deleting, setDeleting] = useState<Invoice | null>(null)
+
+  const confirmDelete = async () => {
+    if (!deleting) return
+    try {
+      await actions.remove.mutateAsync(deleting.id)
+      toast.success('Brouillon supprimé.')
+    } catch (error) {
+      toast.error(errorMessage(error))
+    } finally {
+      setDeleting(null)
+    }
+  }
 
   const columns: Column<Invoice>[] = [
     {
@@ -50,6 +68,30 @@ export function InvoicesPage({ kind }: { kind: InvoiceType }) {
       cell: (i) => (i.status === 'posted' ? formatMoney(i.amount_due, i.currency) : '—'),
     },
     { key: 'status', header: 'Statut', cell: (i) => <InvoiceStatusBadge status={i.status} /> },
+    ...(can('invoices.update')
+      ? [
+          {
+            key: 'actions',
+            header: 'Actions',
+            align: 'right' as const,
+            cell: (i: Invoice) =>
+              i.status === 'draft' ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={<Trash2 className="size-4" aria-hidden="true" />}
+                  aria-label={`Supprimer le brouillon de ${i.partner?.name ?? 'la facture'}`}
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    setDeleting(i)
+                  }}
+                >
+                  Supprimer
+                </Button>
+              ) : null,
+          },
+        ]
+      : []),
   ]
 
   return (
@@ -108,6 +150,16 @@ export function InvoicesPage({ kind }: { kind: InvoiceType }) {
         />
         <Pagination meta={query.data?.meta} onPageChange={list.setPage} />
       </Card>
+      <ConfirmDialog
+        open={deleting !== null}
+        title="Supprimer le brouillon"
+        message="Ce brouillon sera définitivement supprimé. Une facture déjà validée ne se supprime pas : elle s'annule depuis sa fiche."
+        confirmLabel="Supprimer"
+        danger
+        loading={actions.remove.isPending}
+        onCancel={() => setDeleting(null)}
+        onConfirm={() => void confirmDelete()}
+      />
     </>
   )
 }

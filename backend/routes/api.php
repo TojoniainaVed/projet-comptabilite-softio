@@ -78,6 +78,7 @@ Route::prefix('v1')->group(function (): void {
                 Route::post($uri, [Accounting\PartnerController::class, 'store'])->defaults('type', $type);
                 Route::get("$uri/{id}", [Accounting\PartnerController::class, 'show'])->whereNumber('id')->defaults('type', $type);
                 Route::put("$uri/{id}", [Accounting\PartnerController::class, 'update'])->whereNumber('id')->defaults('type', $type);
+                Route::delete("$uri/{id}", [Accounting\PartnerController::class, 'destroy'])->whereNumber('id')->defaults('type', $type);
             }
 
             Route::post('invoices/{invoice}/post', [Accounting\InvoiceController::class, 'post']);

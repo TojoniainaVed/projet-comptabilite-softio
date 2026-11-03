@@ -60,5 +60,13 @@ export function createResource<TItem, TInput = Record<string, unknown>>(
     })
   }
 
-  return { keys, useList, useOptions, useOne, useCreate, useUpdate }
+    function useRemove() {
+    const client = useQueryClient()
+    return useMutation({
+      mutationFn: (id: number | string) => api.delete(`${path}/${id}`),
+      onSuccess: () => client.invalidateQueries({ queryKey: keys.all }),
+    })
+  }
+
+  return { keys, useList, useOptions, useOne, useCreate, useUpdate, useRemove }
 }
