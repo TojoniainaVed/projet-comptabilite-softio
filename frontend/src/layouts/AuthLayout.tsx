@@ -2,7 +2,6 @@ import { Outlet } from 'react-router-dom'
 import { Logo } from '@/components/Logo'
 import { usePlatform } from '@/features/auth/usePlatform'
 
-/** Pages publiques (connexion, inscription…) : panneau de marque à gauche, formulaire à droite. */
 export function AuthLayout() {
   const platform = usePlatform()
   const name = platform?.platform_name ?? 'Softio Comptabilité'
@@ -10,10 +9,9 @@ export function AuthLayout() {
   return (
     <div className="grid min-h-screen bg-surface lg:grid-cols-[1fr_1fr] xl:grid-cols-[54fr_46fr]">
       <aside className="relative hidden flex-col overflow-hidden bg-linear-to-br from-admin to-brand-500 px-10 py-10 text-white lg:flex xl:px-[9%] 2xl:py-16">
-        {/* Le bloc central se place au milieu de la hauteur disponible, quelle que soit la taille de l'écran. */}
         <div className="relative z-10 my-auto py-8">
           <div className="mb-10 w-fit rounded-card bg-white px-5 py-3 shadow-overlay xl:mb-12 xl:px-6 xl:py-3.5">
-            <Logo className="h-14 xl:h-[4.5rem] 2xl:h-20" />
+            <Logo className="h-14 xl:h-18 2xl:h-20" />
           </div>
           <div className="max-w-md 2xl:max-w-lg">
             <p className="mb-4 text-3xl leading-tight font-bold xl:mb-5 xl:text-4xl 2xl:text-5xl">
