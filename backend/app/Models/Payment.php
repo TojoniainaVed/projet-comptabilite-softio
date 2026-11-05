@@ -17,10 +17,7 @@ class Payment extends Model
         'paid_on', 'method', 'reference', 'idempotency_key', 'created_by',
     ];
 
-    protected function casts(): array
-    {
-        return ['amount' => 'decimal:2', 'paid_on' => 'date'];
-    }
+    protected $casts = ['amount' => 'decimal:2', 'paid_on' => 'date'];
 
     public function invoice(): BelongsTo
     {

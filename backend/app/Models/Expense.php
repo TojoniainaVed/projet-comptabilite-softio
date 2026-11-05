@@ -19,10 +19,7 @@ class Expense extends Model
         'paid_from_account_id', 'partner_id', 'journal_entry_id', 'status', 'reference', 'created_by',
     ];
 
-    protected function casts(): array
-    {
-        return ['expense_date' => 'date', 'amount' => 'decimal:2'];
-    }
+    protected $casts = ['expense_date' => 'date', 'amount' => 'decimal:2'];
 
     public function account(): BelongsTo
     {

@@ -14,16 +14,13 @@ class InvoiceLine extends Model
         'tax_rate', 'net_amount', 'tax_amount',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'quantity' => 'decimal:2',
-            'unit_price' => 'decimal:2',
-            'tax_rate' => 'decimal:2',
-            'net_amount' => 'decimal:2',
-            'tax_amount' => 'decimal:2',
-        ];
-    }
+    protected $casts = [
+        'quantity' => 'decimal:2',
+        'unit_price' => 'decimal:2',
+        'tax_rate' => 'decimal:2',
+        'net_amount' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+    ];
 
     protected static function booted(): void
     {

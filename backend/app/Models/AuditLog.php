@@ -18,10 +18,7 @@ class AuditLog extends Model
         'metadata', 'ip_address', 'user_agent',
     ];
 
-    protected function casts(): array
-    {
-        return ['metadata' => 'array'];
-    }
+    protected $casts = ['metadata' => 'array'];
 
     protected static function booted(): void
     {

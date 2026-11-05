@@ -24,16 +24,13 @@ class User extends Authenticatable
     /** @var list<string>|null */
     private ?array $permissionCache = null;
 
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
-            'is_active' => 'boolean',
-            'last_login_at' => 'datetime',
-            'email_verified_at' => 'datetime',
-            'must_verify_email' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'password' => 'hashed',
+        'is_active' => 'boolean',
+        'last_login_at' => 'datetime',
+        'email_verified_at' => 'datetime',
+        'must_verify_email' => 'boolean',
+    ];
 
     /** Les adresses e-mail sont toujours enregistrées en minuscules. */
     protected function email(): Attribute

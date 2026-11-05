@@ -30,18 +30,15 @@ class Invoice extends Model
         'amount_paid', 'notes', 'posted_at', 'created_by',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'invoice_date' => 'date',
-            'due_date' => 'date',
-            'posted_at' => 'datetime',
-            'subtotal' => 'decimal:2',
-            'tax_total' => 'decimal:2',
-            'total' => 'decimal:2',
-            'amount_paid' => 'decimal:2',
-        ];
-    }
+    protected $casts = [
+        'invoice_date' => 'date',
+        'due_date' => 'date',
+        'posted_at' => 'datetime',
+        'subtotal' => 'decimal:2',
+        'tax_total' => 'decimal:2',
+        'total' => 'decimal:2',
+        'amount_paid' => 'decimal:2',
+    ];
 
     public function partner(): BelongsTo
     {

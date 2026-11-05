@@ -7,7 +7,9 @@ use App\Models\Role;
 use App\Models\User;
 use App\Services\Account\AccountMailer;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
+use InvalidArgumentException;
 use Tests\Support\RecordingMailer;
 
 class SelfRegistrationTest extends FeatureTestCase
@@ -115,6 +117,30 @@ class SelfRegistrationTest extends FeatureTestCase
         $this->get($other)->assertRedirect(config('softio.frontend_url').'/login?verified=invalid');
 
         $this->assertTrue(User::query()->where('email', 'jean@rakoto.test')->firstOrFail()->must_verify_email);
+    }
+
+    public function test_email_with_line_breaks_is_rejected_to_prevent_header_injection(): void
+    {
+        // Le premier cas est celui de l'alerte CVE-2026-48019 : accepté par la règle « email » de Laravel 10.
+        foreach (["\"jean\r\nBcc: victime@x.test\"@rakoto.test", "jean@rakoto.test\r\nBcc: victime@x.test", "jean\r@rakoto.test"] as $email) {
+            $this->postJson('/api/v1/auth/register', $this->payload(['email' => $email]))
+                ->assertUnprocessable()->assertJsonValidationErrors('email');
+        }
+
+        $this->postJson('/api/v1/auth/password/forgot', ['email' => "\"jean\r\nBcc: victime@x.test\"@rakoto.test"])
+            ->assertUnprocessable()->assertJsonValidationErrors('email');
+
+        $this->assertSame(0, User::query()->count());
+        $this->assertCount(0, $this->mailer->verificationUrls);
+    }
+
+    public function test_mailer_refuses_an_address_with_line_breaks_even_if_stored(): void
+    {
+        Mail::fake();
+        $user = new User(['name' => 'Jean', 'email' => "\"jean\r\nBcc: victime@x.test\"@rakoto.test"]);
+
+        $this->expectException(InvalidArgumentException::class);
+        (new AccountMailer)->sendPasswordReset($user, 'https://exemple.test/reset');
     }
 
     public function test_expired_verification_link_is_rejected(): void

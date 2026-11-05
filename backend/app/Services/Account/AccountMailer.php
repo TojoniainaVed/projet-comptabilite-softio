@@ -4,6 +4,7 @@ namespace App\Services\Account;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
+use InvalidArgumentException;
 
 /**
  * Envoi des e-mails transactionnels (texte brut, sans pièce jointe). Isolé dans un service pour pouvoir
@@ -34,8 +35,14 @@ class AccountMailer
 
     private function send(User $user, string $subject, string $body): void
     {
-        Mail::raw($body, function ($message) use ($user, $subject): void {
-            $message->to($user->email, $user->name)->subject($subject);
+        // Seconde ligne de défense contre l'injection d'en-têtes (CRLF), non corrigée dans Laravel 10.
+        if (preg_match('/[\x00-\x1F\x7F]/', $user->email) === 1) {
+            throw new InvalidArgumentException("Adresse e-mail invalide pour l'utilisateur #{$user->id}.");
+        }
+        $name = (string) preg_replace('/[\x00-\x1F\x7F]+/', ' ', $user->name);
+
+        Mail::raw($body, function ($message) use ($user, $name, $subject): void {
+            $message->to($user->email, $name)->subject($subject);
         });
     }
 }

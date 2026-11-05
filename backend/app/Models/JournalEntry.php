@@ -27,14 +27,11 @@ class JournalEntry extends Model
         'posted_at', 'posted_by', 'created_by',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'entry_date' => 'date',
-            'posted_at' => 'datetime',
-            'reversed_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'entry_date' => 'date',
+        'posted_at' => 'datetime',
+        'reversed_at' => 'datetime',
+    ];
 
     protected static function booted(): void
     {

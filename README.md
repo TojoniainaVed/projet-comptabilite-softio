@@ -5,7 +5,7 @@ Module de comptabilité de l'ERP **Softio** : espace comptable (écritures en pa
 | Couche | Technologies |
 | --- | --- |
 | Frontend | React 19, TypeScript (`strict`), Vite 7, Tailwind CSS 4, React Router 7, TanStack Query 5, React Hook Form + Zod, Lucide React, Vitest + Testing Library |
-| Backend | PHP ≥ 8.2, Laravel 12, Laravel Sanctum (jetons Bearer), Eloquent, Form Requests, API Resources, Policies/Gates |
+| Backend | PHP ≥ 8.1, Laravel 10, Laravel Sanctum 3 (jetons Bearer), Eloquent, Form Requests, API Resources, Policies/Gates |
 | Base de données | PostgreSQL (SQLite en mémoire pour les tests PHPUnit) |
 
 > ⚠️ **État de vérification — lisez [« Ce qui a été vérifié »](#ce-qui-a-été-vérifié).**
@@ -24,10 +24,12 @@ softio-comptabilite/
 
 ## Prérequis
 
-- PHP ≥ 8.2 avec les extensions `pdo_pgsql`, `mbstring`, `openssl`, `xml`, `ctype`, `json`, `tokenizer` (et `pdo_sqlite` pour les tests)
+- PHP ≥ 8.1 avec les extensions `pdo_pgsql`, `mbstring`, `openssl`, `xml`, `ctype`, `json`, `tokenizer` (et `pdo_sqlite` pour les tests)
 - [Composer](https://getcomposer.org) 2
 - Node.js ≥ 20.19 et npm
 - PostgreSQL ≥ 14
+
+> **Sécurité — Laravel 10 n'est plus maintenu** (fin des correctifs de sécurité en février 2025, PHP 8.1 en décembre 2025). Composer bloque son installation à cause de failles connues ; elles sont ignorées explicitement dans `backend/composer.json` (`config.policy.advisories.ignore-id`). L'injection CRLF dans la règle `email` (CVE-2026-48019) est corrigée dans le projet (`app/Validation/Validator.php` et `AccountMailer`). Laissez `APP_DEBUG=false` en production. Dès que le serveur le permet, repassez à Laravel 12 et PHP ≥ 8.2.
 
 ## Installation
 

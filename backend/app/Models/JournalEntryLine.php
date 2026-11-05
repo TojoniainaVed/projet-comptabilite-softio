@@ -11,10 +11,7 @@ class JournalEntryLine extends Model
     public $timestamps = false;
     protected $fillable = ['journal_entry_id', 'account_id', 'label', 'debit', 'credit'];
 
-    protected function casts(): array
-    {
-        return ['debit' => 'decimal:2', 'credit' => 'decimal:2'];
-    }
+    protected $casts = ['debit' => 'decimal:2', 'credit' => 'decimal:2'];
 
     protected static function booted(): void
     {

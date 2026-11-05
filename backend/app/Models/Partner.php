@@ -15,8 +15,5 @@ class Partner extends Model
 
     protected $fillable = ['company_id', 'type', 'name', 'email', 'phone', 'tax_id', 'address', 'is_active'];
 
-    protected function casts(): array
-    {
-        return ['is_active' => 'boolean'];
-    }
+    protected $casts = ['is_active' => 'boolean'];
 }

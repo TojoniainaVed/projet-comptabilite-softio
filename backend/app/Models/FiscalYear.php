@@ -16,10 +16,7 @@ class FiscalYear extends Model
 
     protected $fillable = ['company_id', 'name', 'starts_on', 'ends_on', 'status'];
 
-    protected function casts(): array
-    {
-        return ['starts_on' => 'date', 'ends_on' => 'date'];
-    }
+    protected $casts = ['starts_on' => 'date', 'ends_on' => 'date'];
 
     public function scopeOpen(Builder $query): Builder
     {

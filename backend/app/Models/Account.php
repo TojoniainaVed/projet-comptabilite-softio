@@ -17,8 +17,5 @@ class Account extends Model
 
     protected $fillable = ['company_id', 'code', 'name', 'type', 'category', 'is_active'];
 
-    protected function casts(): array
-    {
-        return ['is_active' => 'boolean'];
-    }
+    protected $casts = ['is_active' => 'boolean'];
 }
