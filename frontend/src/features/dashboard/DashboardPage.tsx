@@ -3,10 +3,19 @@ import {
   AlertTriangle,
   ArrowDownCircle,
   ArrowUpCircle,
+  BarChart3,
+  BookOpen,
   FileClock,
+  FileText,
   Landmark,
+  ListTree,
+  Receipt,
+  Settings,
   TrendingDown,
   TrendingUp,
+  Truck,
+  Users,
+  Wallet,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { PageHeader } from '@/components/ui/PageHeader'
@@ -21,8 +30,9 @@ import { useAuth } from '@/features/auth/AuthProvider'
 import type { AccountingDashboard } from '@/types/api'
 
 export function DashboardPage() {
-  const { user } = useAuth()
+  const { user, can } = useAuth()
   const currency = user?.company?.currency ?? 'MGA'
+
   const query = useQuery({
     queryKey: ['dashboard'],
     queryFn: ({ signal }) =>
@@ -31,90 +41,227 @@ export function DashboardPage() {
   })
 
   if (query.isLoading) return <LoadingSpinner />
+
   if (query.isError || !query.data)
     return <ErrorState message={errorMessage(query.error)} onRetry={() => void query.refetch()} />
+
   const d = query.data
+
+  // Accès rapides affichés selon les permissions de l'utilisateur connecté.
+  const quickAccess = [
+    {
+      label: 'Plan comptable',
+      description: 'Consulter les comptes',
+      to: '/accounts',
+      permission: 'accounts.view',
+      icon: <ListTree className="size-5" />,
+    },
+    {
+      label: 'Écritures comptables',
+      description: 'Consulter les écritures',
+      to: '/journal-entries',
+      permission: 'entries.view',
+      icon: <BookOpen className="size-5" />,
+    },
+    {
+      label: 'Clients',
+      description: 'Consulter les clients',
+      to: '/customers',
+      permission: 'partners.view',
+      icon: <Users className="size-5" />,
+    },
+    {
+      label: 'Fournisseurs',
+      description: 'Consulter les fournisseurs',
+      to: '/suppliers',
+      permission: 'partners.view',
+      icon: <Truck className="size-5" />,
+    },
+    {
+      label: 'Factures clients',
+      description: 'Consulter les factures clients',
+      to: '/sales/invoices',
+      permission: 'invoices.view',
+      icon: <FileText className="size-5" />,
+    },
+    {
+      label: 'Factures fournisseurs',
+      description: 'Consulter les factures fournisseurs',
+      to: '/purchases/invoices',
+      permission: 'invoices.view',
+      icon: <FileText className="size-5" />,
+    },
+    {
+      label: 'Paiements',
+      description: 'Consulter les paiements',
+      to: '/payments',
+      permission: 'payments.view',
+      icon: <Wallet className="size-5" />,
+    },
+    {
+      label: 'Dépenses',
+      description: 'Consulter les dépenses',
+      to: '/expenses',
+      permission: 'expenses.view',
+      icon: <Receipt className="size-5" />,
+    },
+    {
+      label: 'Rapports',
+      description: 'Consulter les rapports comptables',
+      to: '/reports',
+      permission: 'reports.view',
+      icon: <BarChart3 className="size-5" />,
+    },
+    {
+      label: 'Paramètres comptables',
+      description: 'Consulter les paramètres',
+      to: '/settings',
+      permission: 'journals.view',
+      icon: <Settings className="size-5" />,
+    },
+  ].filter((item) => can(item.permission))
+
   const max = Math.max(1, ...d.monthly.flatMap((m) => [Number(m.revenue), Number(m.expenses)]))
 
   return (
-    <>
+    <div className="w-full space-y-4">
+      {/* En-tête */}
       <PageHeader title="Tableau de bord" description={user?.company?.name} />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* Indicateurs financiers */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard
           label="Trésorerie"
           value={formatMoney(d.treasury_total, currency)}
           icon={<Landmark className="size-5" aria-hidden="true" />}
         />
+
         <StatCard
           label="Créances clients"
           value={formatMoney(d.receivable_outstanding, currency)}
           hint="Factures validées non soldées"
           icon={<ArrowDownCircle className="size-5" aria-hidden="true" />}
         />
+
         <StatCard
           label="Dettes fournisseurs"
           value={formatMoney(d.payable_outstanding, currency)}
           hint="Factures validées non soldées"
           icon={<ArrowUpCircle className="size-5" aria-hidden="true" />}
         />
+
+        <StatCard
+          label="Produits du mois"
+          value={formatMoney(d.revenue_this_month, currency)}
+          icon={<TrendingUp className="size-5" aria-hidden="true" />}
+        />
+
+        <StatCard
+          label="Charges du mois"
+          value={formatMoney(d.expenses_this_month, currency)}
+          icon={<TrendingDown className="size-5" aria-hidden="true" />}
+        />
+
+        <StatCard
+          label="Résultat du mois"
+          value={formatMoney(d.net_result_this_month, currency)}
+          hint="Produits - charges"
+          icon={<Landmark className="size-5" aria-hidden="true" />}
+        />
+
         <StatCard
           label="Écritures brouillon"
           value={d.draft_entries}
           hint="À valider"
           icon={<FileClock className="size-5" aria-hidden="true" />}
         />
+
         <StatCard
-          label="Produits du mois"
-          value={formatMoney(d.revenue_this_month, currency)}
-          icon={<TrendingUp className="size-5" aria-hidden="true" />}
+          label="Retards clients"
+          value={d.overdue_customer_invoices}
+          hint="Factures clients échues et impayées"
+          icon={<AlertTriangle className="size-5" aria-hidden="true" />}
         />
+
         <StatCard
-          label="Charges du mois"
-          value={formatMoney(d.expenses_this_month, currency)}
-          icon={<TrendingDown className="size-5" aria-hidden="true" />}
-        />
-        <StatCard
-          label="Factures en retard"
-          value={d.overdue_invoices}
-          hint="Clients, échéance dépassée"
+          label="Retards fournisseurs"
+          value={d.overdue_supplier_invoices}
+          hint="Factures fournisseurs échues et impayées"
           icon={<AlertTriangle className="size-5" aria-hidden="true" />}
         />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      {/* Accès rapides */}
+      {quickAccess.length > 0 && (
+        <Card title="Accès rapides">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {quickAccess.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="flex items-center gap-3 rounded-lg border border-line p-3 transition-colors hover:border-brand-500 hover:bg-surface-secondary"
+              >
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                  {item.icon}
+                </span>
+
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-medium text-ink">{item.label}</span>
+
+                  <span className="block truncate text-xs text-ink-muted">{item.description}</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Graphiques et dernières écritures */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Produits et charges */}
         <Card title="Produits et charges — 6 derniers mois">
           <div
             role="img"
             aria-label="Histogramme des produits et des charges par mois"
-            className="flex h-48 items-end gap-3"
+            className="flex h-40 items-end gap-2"
           >
             {d.monthly.map((m) => (
-              <div key={m.month} className="flex flex-1 flex-col items-center gap-1">
-                <div className="flex h-40 w-full items-end justify-center gap-1">
+              <div key={m.month} className="flex min-w-0 flex-1 flex-col items-center gap-1">
+                <div className="flex h-32 w-full items-end justify-center gap-1">
                   <div
-                    className="w-1/2 rounded-t-xs bg-brand-600"
-                    style={{ height: `${(Number(m.revenue) / max) * 100}%` }}
+                    className="w-1/2 rounded-t-sm bg-brand-600 transition-all"
+                    style={{
+                      height: `${(Number(m.revenue) / max) * 100}%`,
+                    }}
                   />
+
                   <div
-                    className="w-1/2 rounded-t-xs bg-warning"
-                    style={{ height: `${(Number(m.expenses) / max) * 100}%` }}
+                    className="w-1/2 rounded-t-sm bg-warning transition-all"
+                    style={{
+                      height: `${(Number(m.expenses) / max) * 100}%`,
+                    }}
                   />
                 </div>
-                <span className="text-xs text-ink-muted">
+
+                <span className="text-[11px] text-ink-muted">
                   {m.month.slice(5)}/{m.month.slice(2, 4)}
                 </span>
               </div>
             ))}
           </div>
-          <div className="mt-3 flex gap-4 text-xs text-ink-muted">
+
+          <div className="mt-2 flex gap-4 text-xs text-ink-muted">
             <span className="flex items-center gap-1">
-              <span className="size-2.5 rounded-xs bg-brand-600" aria-hidden="true" /> Produits
+              <span className="size-2.5 rounded-sm bg-brand-600" />
+              Produits
             </span>
+
             <span className="flex items-center gap-1">
-              <span className="size-2.5 rounded-xs bg-warning" aria-hidden="true" /> Charges
+              <span className="size-2.5 rounded-sm bg-warning" />
+              Charges
             </span>
           </div>
+
           <table className="sr-only">
             <caption>Produits et charges par mois</caption>
             <thead>
@@ -136,15 +283,16 @@ export function DashboardPage() {
           </table>
         </Card>
 
+        {/* Dernières écritures */}
         <Card title="Dernières écritures" padded={false}>
           {d.recent_entries.length === 0 ? (
-            <p className="p-5 text-sm text-ink-muted">Aucune écriture pour le moment.</p>
+            <p className="px-4 py-4 text-sm text-ink-muted">Aucune écriture pour le moment.</p>
           ) : (
             <ul className="divide-y divide-line">
               {d.recent_entries.map((e) => (
                 <li
                   key={e.id}
-                  className="flex items-center justify-between gap-3 px-5 py-3 text-sm"
+                  className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm"
                 >
                   <div className="min-w-0">
                     <Link
@@ -153,10 +301,12 @@ export function DashboardPage() {
                     >
                       {e.reference ?? 'Brouillon'}
                     </Link>
+
                     <p className="truncate text-ink-muted">
                       {e.description} · {formatDate(e.entry_date)}
                     </p>
                   </div>
+
                   <EntryStatusBadge status={e.status} />
                 </li>
               ))}
@@ -164,6 +314,6 @@ export function DashboardPage() {
           )}
         </Card>
       </div>
-    </>
+    </div>
   )
 }
