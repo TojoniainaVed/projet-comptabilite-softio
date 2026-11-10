@@ -5,6 +5,7 @@
   "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "typescript.tsdk": "frontend/node_modules/typescript/lib",
   "eslint.workingDirectories": ["frontend"],
-  "files.exclude": { "**/node_modules": true, "**/vendor": true },
+  "files.exclude": { "**/node_modules": true },
+  "search.exclude": { "**/node_modules": true, "**/vendor": true },
   "tailwindCSS.experimental.classRegex": [["cn\\(([^)]*)\\)", "'([^']*)'"]]
 }

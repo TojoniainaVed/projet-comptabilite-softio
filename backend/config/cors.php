@@ -8,6 +8,5 @@ return [
     'allowed_headers' => ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With', 'Idempotency-Key'],
     'exposed_headers' => [],
     'max_age' => 600,
-    // Authentification par jeton Bearer : pas de cookies inter-origines.
     'supports_credentials' => false,
 ];
