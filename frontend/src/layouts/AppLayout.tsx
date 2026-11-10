@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Logo } from '@/components/Logo'
 import {
   BookOpen,
+  Contact,
   FileText,
   FileUser,
   Landmark,
@@ -28,9 +29,17 @@ const nav: NavItem[] = [
   },
   { to: '/accounts', label: 'Plan comptable', icon: ListTree, permission: 'accounts.view' },
   { to: '/journal-entries', label: 'Écritures', icon: BookOpen, permission: 'entries.view' },
-  { to: '/customers', label: 'Clients', icon: Users, permission: 'partners.view' },
-  { to: '/suppliers', label: 'Fournisseurs', icon: Truck, permission: 'partners.view' },
-  // duex factures dans un menu
+  // Clients et fournisseurs regroupés dans un sous-menu
+  {
+    label: 'Comptes',
+    icon: Contact,
+    permission: 'partners.view',
+    children: [
+      { to: '/customers', label: 'Clients', icon: Users, permission: 'partners.view' },
+      { to: '/suppliers', label: 'Fournisseurs', icon: Truck, permission: 'partners.view' },
+    ],
+  },
+  // Deux factures dans un menu
   {
     label: 'Factures',
     icon: FileText,

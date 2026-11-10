@@ -160,4 +160,17 @@ class PaymentTest extends FeatureTestCase
         $this->getJson('/api/v1/payments')->assertOk()->assertJsonPath('meta.total', 2);
         $this->getJson("/api/v1/payments?invoice_id=$a")->assertOk()->assertJsonPath('meta.total', 1)->assertJsonPath('data.0.amount', '10.00');
     }
+
+    public function test_payments_can_be_filtered_by_direction(): void
+    {
+        $customer = $this->postedInvoice('customer');
+        $supplier = $this->postedInvoice('supplier');
+        $this->pay($customer, '10.00', 'cle-sens-000001')->assertCreated();
+        $this->pay($supplier, '30.00', 'cle-sens-000002')->assertCreated();
+
+        $this->getJson('/api/v1/payments?direction=in')->assertOk()
+            ->assertJsonPath('meta.total', 1)->assertJsonPath('data.0.amount', '10.00');
+        $this->getJson('/api/v1/payments?direction=out')->assertOk()
+            ->assertJsonPath('meta.total', 1)->assertJsonPath('data.0.amount', '30.00');
+    }
 }

@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { DataTable, type Column } from '@/components/ui/DataTable'
 import { Pagination } from '@/components/ui/Pagination'
 import { DatePicker } from '@/components/ui/DatePicker'
+import { Select } from '@/components/ui/Select'
 import { useListParams } from '@/hooks/useListParams'
 import { paymentMethodLabels } from '@/lib/labels'
 import { errorMessage } from '@/lib/form-errors'
@@ -13,7 +14,8 @@ import { invoiceBasePath } from '@/features/invoices/api'
 import type { Payment } from '@/types/api'
 
 export function PaymentsPage() {
-  const list = useListParams()
+  // Les encaissements et les décaissements ne sont jamais affichés ensemble : encaissements par défaut.
+  const list = useListParams({ direction: 'in' })
   const query = paymentsApi.useList({ ...list.params, per_page: 25 })
 
   const columns: Column<Payment>[] = [
@@ -32,11 +34,6 @@ export function PaymentsPage() {
         ) : (
           '—'
         ),
-    },
-    {
-      key: 'sens',
-      header: 'Sens',
-      cell: (p) => (p.invoice?.type === 'supplier' ? 'Décaissement' : 'Encaissement'),
     },
     { key: 'method', header: 'Mode', cell: (p) => paymentMethodLabels[p.method] },
     {
@@ -57,6 +54,14 @@ export function PaymentsPage() {
       />
       <Card padded={false}>
         <div className="grid gap-3 border-b border-line p-4 sm:grid-cols-4">
+          <Select
+            aria-label="Sens des paiements"
+            value={list.filters.direction}
+            onChange={(e) => list.setFilter('direction', e.target.value)}
+          >
+            <option value="in">Encaissements</option>
+            <option value="out">Décaissements</option>
+          </Select>
           <DatePicker
             aria-label="Du"
             value={list.filters.from ?? ''}
@@ -76,7 +81,9 @@ export function PaymentsPage() {
           loading={query.isLoading}
           error={query.isError ? errorMessage(query.error) : null}
           onRetry={() => void query.refetch()}
-          emptyTitle="Aucun paiement"
+          emptyTitle={
+            list.filters.direction === 'out' ? 'Aucun décaissement' : 'Aucun encaissement'
+          }
         />
         <Pagination meta={query.data?.meta} onPageChange={list.setPage} />
       </Card>
