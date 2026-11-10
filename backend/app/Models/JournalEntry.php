@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToCompany;
-use LogicException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use LogicException;
 
 class JournalEntry extends Model
 {

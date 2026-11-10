@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentType, type ReactNode } from 'react'
+import { useState, type ComponentType, type ReactNode } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { ChevronDown, LogOut, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -36,7 +36,6 @@ interface ShellProps {
 export function Shell({ brand, nav, tone, footerLink }: ShellProps) {
   const { user, logout, can } = useAuth()
   const [open, setOpen] = useState(false)
-  const [expanded, setExpanded] = useState<string | null>(null)
   const location = useLocation()
 
   const dark = tone === 'dark'
@@ -48,18 +47,20 @@ export function Shell({ brand, nav, tone, footerLink }: ShellProps) {
       children: item.children?.filter((child) => !child.permission || can(child.permission)),
     }))
 
-  // Ouvre automatiquement le sous-menu correspondant à la page active.
-  useEffect(() => {
-    const activeParent = visible.find((item) =>
+  const activeParentLabel =
+    visible.find((item) =>
       item.children?.some(
         (child) => location.pathname === child.to || location.pathname.startsWith(`${child.to}/`),
       ),
-    )
+    )?.label ?? null
 
-    if (activeParent) {
-      setExpanded(activeParent.label)
-    }
-  }, [location.pathname])
+  // Ouvre automatiquement le sous-menu correspondant à la page active (à chaque changement de page).
+  const [expanded, setExpanded] = useState<string | null>(activeParentLabel)
+  const [lastPath, setLastPath] = useState(location.pathname)
+  if (lastPath !== location.pathname) {
+    setLastPath(location.pathname)
+    if (activeParentLabel) setExpanded(activeParentLabel)
+  }
 
   const linkClass = (isActive: boolean) =>
     cn(

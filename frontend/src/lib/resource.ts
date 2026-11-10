@@ -60,7 +60,7 @@ export function createResource<TItem, TInput = Record<string, unknown>>(
     })
   }
 
-    function useRemove() {
+  function useRemove() {
     const client = useQueryClient()
     return useMutation({
       mutationFn: (id: number | string) => api.delete(`${path}/${id}`),

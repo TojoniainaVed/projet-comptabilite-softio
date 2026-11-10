@@ -7,7 +7,6 @@ use App\Models\AuditLog;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Admin\UserAdminGuard;
-use Laravel\Sanctum\Sanctum;
 
 class UserManagementTest extends FeatureTestCase
 {

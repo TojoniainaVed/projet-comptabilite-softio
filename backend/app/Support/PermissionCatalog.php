@@ -95,7 +95,7 @@ final class PermissionCatalog
             self::COMPANY_ADMIN => [
                 'name' => "Administrateur d'entreprise",
                 'scope' => self::COMPANY,
-                'description' => "Gère les utilisateurs et la configuration de son entreprise, avec accès complet à la comptabilité.",
+                'description' => 'Gère les utilisateurs et la configuration de son entreprise, avec accès complet à la comptabilité.',
                 'permissions' => array_merge(
                     self::accounting(),
                     [

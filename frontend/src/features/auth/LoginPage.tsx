@@ -129,12 +129,12 @@ export function LoginPage() {
       <Button type="submit" loading={isSubmitting} className="w-full">
         Se connecter
       </Button>
-            <div className="text-center text-sm">
+      <div className="text-center text-sm">
         <Link to="/forgot-password" className="text-brand-600 hover:underline">
           Mot de passe oublié ?
         </Link>
       </div>
-      {platform?.registration_enabled !== false && (
+      {platform?.registration_enabled && (
         <div className="border-t border-line pt-4">
           <p className="mb-2 text-center text-sm text-ink-muted">Pas encore de compte ?</p>
           <Button
@@ -147,16 +147,6 @@ export function LoginPage() {
           </Button>
         </div>
       )}
-      <div className="flex items-center justify-between text-sm">
-        <Link to="/forgot-password" className="text-brand-600 hover:underline">
-          Mot de passe oublié ?
-        </Link>
-        {platform?.registration_enabled && (
-          <Link to="/register" className="font-medium text-brand-600 hover:underline">
-            Créer un compte
-          </Link>
-        )}
-      </div>
     </form>
   )
 }

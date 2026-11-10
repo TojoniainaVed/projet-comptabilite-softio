@@ -88,6 +88,7 @@ class AuthTest extends FeatureTestCase
     {
         $this->getJson('/api/v1/platform')->assertOk()
             ->assertJsonStructure(['data' => ['platform_name', 'brand_color', 'default_locale']])
-            ->assertJsonMissingPath('data.password_min_length');
+            ->assertJsonMissingPath('data.default_currency')
+            ->assertJsonMissingPath('data.features');
     }
 }

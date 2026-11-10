@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers\Api\V1\Accounting;
 
+use App\Exceptions\BusinessRuleException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PartnerRequest;
 use App\Http\Resources\PartnerResource;
+use App\Models\Expense;
+use App\Models\Invoice;
 use App\Models\Partner;
 use App\Services\Audit\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use App\Exceptions\BusinessRuleException;
-use App\Models\Expense;
-use App\Models\Invoice;
 
 class PartnerController extends Controller
 {
     public function __construct(private readonly AuditLogger $audit) {}
+
     public function destroy(Request $request, int $id): JsonResponse
     {
         $this->authorize('partners.update');
@@ -46,10 +47,10 @@ class PartnerController extends Controller
 
         $query = Partner::query()
             ->where('type', $this->type($request))
-            ->when($request->string('search')->trim()->value(), fn($q, $term) => $q->where(
-                fn($w) => $w->where('name', 'like', $this->like($term))->orWhere('email', 'like', $this->like($term))
+            ->when($request->string('search')->trim()->value(), fn ($q, $term) => $q->where(
+                fn ($w) => $w->where('name', 'like', $this->like($term))->orWhere('email', 'like', $this->like($term))
             ))
-            ->when($request->filled('is_active'), fn($q) => $q->where('is_active', $request->boolean('is_active')))
+            ->when($request->filled('is_active'), fn ($q) => $q->where('is_active', $request->boolean('is_active')))
             ->orderBy('name');
 
         return $this->listResponse($request, $query, PartnerResource::class);

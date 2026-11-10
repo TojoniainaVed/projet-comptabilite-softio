@@ -10,7 +10,6 @@ use App\Models\JournalEntry;
 use App\Models\User;
 use App\Services\Audit\AuditLogger;
 use App\Support\Money;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -97,7 +96,7 @@ class JournalEntryService
             if (! EntryBalance::isBalanced($totals)) {
                 throw new BusinessRuleException(
                     sprintf(
-                        "Écriture déséquilibrée : débit %s, crédit %s.",
+                        'Écriture déséquilibrée : débit %s, crédit %s.',
                         Money::fromCents($totals['debit']),
                         Money::fromCents($totals['credit']),
                     ),

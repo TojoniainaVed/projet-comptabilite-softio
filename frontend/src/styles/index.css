@@ -30,8 +30,7 @@
   --shadow-overlay: 0 24px 60px rgb(20 30 40 / 0.28);
 }
 @layer base {
-
-    html {
+  html {
     color-scheme: light;
     font-synthesis: none;
     text-rendering: optimizeLegibility;

@@ -33,18 +33,18 @@ async function fillRegistration(overrides: { password?: string; confirm?: string
 }
 
 describe('inscription', () => {
-  it("propose « Créer un compte » seulement quand l'inscription est ouverte", async () => {
+  it("propose « S'inscrire » seulement quand l'inscription est ouverte", async () => {
     const server = mockApi()
     server.on('GET', '/platform', platform())
     const { unmount } = renderRoutes(routes, { route: '/login' })
-    expect(await screen.findByRole('link', { name: 'Créer un compte' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: "S'inscrire" })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Mot de passe oublié ?' })).toBeInTheDocument()
     unmount()
 
     server.on('GET', '/platform', platform({ registration_enabled: false }))
     renderRoutes(routes, { route: '/login' })
     await screen.findByRole('heading', { name: 'Connexion' })
-    expect(screen.queryByRole('link', { name: 'Créer un compte' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: "S'inscrire" })).not.toBeInTheDocument()
   })
 
   it('valide localement : champs vides, mot de passe faible, confirmation, conditions', async () => {

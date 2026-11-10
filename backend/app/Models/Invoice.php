@@ -30,6 +30,11 @@ class Invoice extends Model
         'amount_paid', 'notes', 'posted_at', 'created_by',
     ];
 
+    /** Valeur par défaut de la base, pour qu'une facture qui vient d'être créée renvoie 0.00 et non null. */
+    protected $attributes = [
+        'amount_paid' => '0.00',
+    ];
+
     protected $casts = [
         'invoice_date' => 'date',
         'due_date' => 'date',

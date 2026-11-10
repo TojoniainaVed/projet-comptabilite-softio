@@ -2,12 +2,10 @@
 
 namespace App\Services\Accounting;
 
-use App\Models\Account;
 use App\Models\Invoice;
 use App\Models\JournalEntry;
 use App\Support\Money;
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /** Indicateurs du tableau de bord financier, tous calculés sur les données réelles de l'entreprise. */
@@ -69,7 +67,7 @@ class AccountingDashboardService
                     'reference',
                     'entry_date',
                     'description',
-                    'status'
+                    'status',
                 ])
                 ->map(fn (JournalEntry $e) => [
                     'id' => $e->id,

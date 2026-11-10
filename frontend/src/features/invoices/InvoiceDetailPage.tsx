@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import { Ban, CheckCircle2, CreditCard, Pencil, Trash2, Printer } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { PageHeader 
-  
-
-} from '@/components/ui/PageHeader'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
@@ -80,12 +77,12 @@ export function InvoiceDetailPage({ kind }: { kind: InvoiceType }) {
                   </Button>
                 </Link>
                 <Button
-                 variant="secondary"
-                   icon={<Printer className="size-4" aria-hidden="true" />}
+                  variant="secondary"
+                  icon={<Printer className="size-4" aria-hidden="true" />}
                   onClick={() => window.print()}
                 >
-                 Imprimer
-              </Button>
+                  Imprimer
+                </Button>
                 <Button
                   variant="secondary"
                   icon={<Trash2 className="size-4" aria-hidden="true" />}
@@ -127,7 +124,6 @@ export function InvoiceDetailPage({ kind }: { kind: InvoiceType }) {
         <div className="mb-4">
           <InlineAlert>{actionError}</InlineAlert>
         </div>
-        
       )}
 
       <Card>

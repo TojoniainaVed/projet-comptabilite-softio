@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use LogicException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use LogicException;
 
 class JournalEntryLine extends Model
 {
     public $timestamps = false;
+
     protected $fillable = ['journal_entry_id', 'account_id', 'label', 'debit', 'credit'];
 
     protected $casts = ['debit' => 'decimal:2', 'credit' => 'decimal:2'];
