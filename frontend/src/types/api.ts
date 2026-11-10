@@ -240,11 +240,21 @@ export interface AccountingDashboard {
   treasury_total: string
   receivable_outstanding: string
   payable_outstanding: string
+
   revenue_this_month: string
   expenses_this_month: string
+  net_result_this_month: string
+
   draft_entries: number
-  overdue_invoices: number
-  monthly: { month: string; revenue: string; expenses: string }[]
+  overdue_customer_invoices: number
+  overdue_supplier_invoices: number
+
+  monthly: {
+    month: string
+    revenue: string
+    expenses: string
+  }[]
+
   recent_entries: {
     id: number
     reference: string | null
