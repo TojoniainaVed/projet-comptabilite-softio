@@ -10,6 +10,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import { api, ApiError, setUnauthorizedHandler } from '@/lib/api-client'
 import { authStorage } from '@/lib/auth-storage'
+import { retournerVersSoftio } from '@/lib/softio'
 import type { AuthUser } from '@/types/api'
 
 interface AuthContextValue {
@@ -17,6 +18,8 @@ interface AuthContextValue {
   /** true tant que la session stockée est en cours de vérification auprès de l'API. */
   loading: boolean
   login: (email: string, password: string) => Promise<AuthUser>
+  /** Connexion depuis Softio avec le code temporaire reçu dans l'URL. */
+  loginWithSoftio: (code: string) => Promise<AuthUser>
   logout: () => Promise<void>
   /** Aide d'affichage uniquement : l'API contrôle chaque opération côté serveur. */
   can: (permission: string) => boolean
@@ -72,25 +75,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return result.user
   }, [])
 
+  const loginWithSoftio = useCallback(async (code: string) => {
+    const result = await api.post<{ token: string; user: AuthUser }>('/auth/sso', { code })
+    authStorage.set(result.token)
+    setUser(result.user)
+    return result.user
+  }, [])
+
   const logout = useCallback(async () => {
+    const venuDeSoftio = user?.from_softio ?? false
     try {
       await api.post('/auth/logout')
     } catch {
       /* le jeton est de toute façon supprimé localement */
     }
     reset()
-  }, [reset])
+    if (venuDeSoftio) retournerVersSoftio()
+  }, [reset, user])
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
       loading,
       login,
+      loginWithSoftio,
       logout,
       can: (permission) => user?.permissions.includes(permission) ?? false,
       isPlatformAdmin: user?.role.scope === 'platform',
     }),
-    [user, loading, login, logout],
+    [user, loading, login, loginWithSoftio, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -8,6 +8,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\Audit\AuditLogger;
+use App\Services\Softio\SoftioSsoService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -43,13 +44,29 @@ class AuthController extends Controller
             );
         }
 
+        return $this->ouvrirSession($user, $request->string('device_name', 'web')->value());
+    }
+
+    /** Connexion depuis Softio : le code reçu dans l'URL est échangé auprès de Softio. */
+    public function sso(Request $request, SoftioSsoService $sso): JsonResponse
+    {
+        $validated = $request->validate(['code' => ['required', 'string', 'max:255']]);
+
+        $user = $sso->connecter($validated['code']);
+
+        return $this->ouvrirSession($user, 'softio', ['via' => 'softio']);
+    }
+
+    /** @param array<string, mixed> $contexte */
+    private function ouvrirSession(User $user, string $device, array $contexte = []): JsonResponse
+    {
         $token = $user->createToken(
-            $request->string('device_name', 'web')->value(),
+            $device,
             ['*'],
             now()->addMinutes((int) config('sanctum.expiration')),
         );
         $user->forceFill(['last_login_at' => now()])->save();
-        $this->audit->log('auth.login', $user, [], $user);
+        $this->audit->log('auth.login', $user, $contexte, $user);
 
         return response()->json([
             'token' => $token->plainTextToken,
@@ -76,6 +93,10 @@ class AuthController extends Controller
     /** @return array<string, mixed> */
     private function payload(User $user): array
     {
-        return UserResource::make($user)->resolve() + ['permissions' => $user->permissionSlugs()];
+        return UserResource::make($user)->resolve() + [
+            'permissions' => $user->permissionSlugs(),
+            // Compte venu de Softio : à la déconnexion, le front le renvoie vers Softio
+            'from_softio' => $user->softio_user_id !== null,
+        ];
     }
 }

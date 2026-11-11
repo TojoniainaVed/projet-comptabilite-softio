@@ -19,6 +19,8 @@ Route::prefix('v1')->group(function (): void {
     // Public
     Route::get('platform', [PlatformController::class, 'show']);
     Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:login');
+    // Connexion depuis Softio avec le code temporaire reçu dans l'URL
+    Route::post('auth/sso', [AuthController::class, 'sso'])->middleware('throttle:login');
 
     // Inscription libre-service, confirmation d'e-mail, mot de passe oublié
     Route::post('auth/register', [Auth\RegistrationController::class, 'register'])->middleware('throttle:register');
@@ -29,7 +31,7 @@ Route::prefix('v1')->group(function (): void {
     Route::post('auth/password/reset', [Auth\PasswordResetController::class, 'reset'])->middleware('throttle:login');
 
     // Authentifié et compte actif
-    Route::middleware(['auth:sanctum', 'active', 'throttle:api'])->group(function (): void {
+    Route::middleware(['auth:sanctum', 'active', 'softio', 'throttle:api'])->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::post('auth/logout', [AuthController::class, 'logout']);
 

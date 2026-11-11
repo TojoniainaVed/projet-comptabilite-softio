@@ -25,6 +25,21 @@ return [
         'terms_url' => env('TERMS_URL'),
     ],
 
+    // Connexion depuis Softio (projet principal) : l'utilisateur arrive avec un code temporaire,
+    // échangé de serveur à serveur contre ses infos et son accès au module.
+    'sso' => [
+        // Adresse de l'API Softio, ex. http://localhost:8000/api
+        'api_url' => rtrim((string) env('SOFTIO_API_URL', 'http://localhost:8000/api'), '/'),
+        // Même valeur que SSO_SECRET dans le .env de Softio
+        'secret' => env('SOFTIO_SSO_SECRET'),
+        // Id du module Compta dans Softio : un code émis pour un autre module est refusé
+        'module_id' => env('SOFTIO_MODULE_ID') !== null ? (int) env('SOFTIO_MODULE_ID') : null,
+        // Revérifie l'accès auprès de Softio au plus toutes les N minutes
+        'verifier_toutes_les' => (int) env('SOFTIO_SSO_VERIFIER_MINUTES', 10),
+        // Rôle donné aux utilisateurs Softio qui ne sont pas le propriétaire de l'entreprise
+        'role_utilisateur' => env('SOFTIO_SSO_ROLE_UTILISATEUR', 'accountant'),
+    ],
+
     'pagination' => [
         'default' => 15,
         'max' => 100,

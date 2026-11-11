@@ -7,6 +7,7 @@ import { ForgotPasswordPage } from '@/features/auth/ForgotPasswordPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RegisterPage } from '@/features/auth/RegisterPage'
 import { ResetPasswordPage } from '@/features/auth/ResetPasswordPage'
+import { SsoPage } from '@/features/auth/SsoPage'
 import { NotFoundPage } from '@/features/auth/ErrorPages'
 import {
   HomeRedirect,
@@ -42,6 +43,7 @@ export const routes: RouteObject[] = [
       { path: '/register', element: <RegisterPage /> },
       { path: '/forgot-password', element: <ForgotPasswordPage /> },
       { path: '/reset-password', element: <ResetPasswordPage /> },
+      { path: '/sso', element: <SsoPage /> },
     ],
   },
   {

@@ -41,5 +41,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'active' => \App\Http\Middleware\EnsureUserIsActive::class,
         'company' => \App\Http\Middleware\EnsureCompanyContext::class,
+        'softio' => \App\Http\Middleware\EnsureSoftioAccess::class,
     ];
 }
