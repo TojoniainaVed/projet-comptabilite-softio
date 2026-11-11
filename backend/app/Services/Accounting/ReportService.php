@@ -168,6 +168,7 @@ class ReportService
             ->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')
             ->join('accounts as a', 'a.id', '=', 'l.account_id')
             ->where('e.company_id', $companyId)
+            ->where('a.company_id', $companyId)
             ->whereIn('e.status', ['posted', 'reversed'])
             ->when($from, fn ($q) => $q->whereDate('e.entry_date', '>=', $from))
             ->when($to, fn ($q) => $q->whereDate('e.entry_date', '<=', $to))

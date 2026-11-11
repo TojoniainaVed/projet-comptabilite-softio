@@ -86,9 +86,12 @@ class AuthTest extends FeatureTestCase
 
     public function test_public_platform_endpoint_exposes_only_branding(): void
     {
+        config(['softio.registration.enabled' => false]);
+
         $this->getJson('/api/v1/platform')->assertOk()
             ->assertJsonStructure(['data' => ['platform_name', 'brand_color', 'default_locale']])
             ->assertJsonMissingPath('data.default_currency')
-            ->assertJsonMissingPath('data.features');
+            ->assertJsonMissingPath('data.features')
+            ->assertJsonMissingPath('data.password_min_length');
     }
 }

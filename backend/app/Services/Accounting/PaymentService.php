@@ -28,19 +28,26 @@ class PaymentService
      */
     public function register(Invoice $invoice, array $data, string $idempotencyKey, User $user): array
     {
-        $existing = Payment::query()->where('idempotency_key', $idempotencyKey)->first();
+        $existing = Payment::query()
+    ->where('company_id', $user->company_id)
+    ->where('idempotency_key', $idempotencyKey)
+    ->first();
         if ($existing !== null) {
             return [$this->replay($existing, $invoice), false];
         }
 
         try {
             return [$this->create($invoice, $data, $idempotencyKey, $user), true];
-        } catch (UniqueConstraintViolationException) {
-            // Deux requêtes simultanées avec la même clé : la seconde retrouve le paiement de la première.
-            $existing = Payment::query()->where('idempotency_key', $idempotencyKey)->firstOrFail();
+        }catch (UniqueConstraintViolationException) {
+    // Deux requêtes simultanées avec la même clé :
+    // la seconde retrouve le paiement de la première.
+    $existing = Payment::query()
+        ->where('company_id', $user->company_id)
+        ->where('idempotency_key', $idempotencyKey)
+        ->firstOrFail();
 
-            return [$this->replay($existing, $invoice), false];
-        }
+    return [$this->replay($existing, $invoice), false];
+}
     }
 
     private function replay(Payment $existing, Invoice $invoice): Payment
@@ -73,11 +80,12 @@ class PaymentService
                 );
             }
 
-            $treasury = Account::query()
-                ->whereKey($data['treasury_account_id'])
-                ->whereIn('category', ['bank', 'cash'])
-                ->where('is_active', true)
-                ->first();
+           $treasury = Account::query()
+    ->whereKey($data['treasury_account_id'])
+    ->whereIn('category', ['bank', 'cash'])
+    ->where('is_active', true)
+    ->where('is_group', false)
+    ->first();
             if ($treasury === null) {
                 throw new BusinessRuleException('Le compte de trésorerie doit être un compte banque ou caisse actif.', 'invalid_treasury_account');
             }

@@ -222,8 +222,17 @@ class InvoiceService
     {
         $ids = collect($lines)->pluck('account_id')->unique();
 
-        if (Account::query()->whereIn('id', $ids)->where('is_active', true)->count() !== $ids->count()) {
-            throw new BusinessRuleException('Un des comptes de ligne est invalide ou inactif.', 'invalid_account');
-        }
+       if (
+    Account::query()
+        ->whereIn('id', $ids)
+        ->where('is_active', true)
+        ->where('is_group', false)
+        ->count() !== $ids->count()
+) {
+    throw new BusinessRuleException(
+        'Un des comptes de ligne est invalide, inactif ou réservé au regroupement.',
+        'invalid_account'
+    );
+}
     }
 }

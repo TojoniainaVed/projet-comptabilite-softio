@@ -20,8 +20,18 @@ class AccountController extends Controller
         $this->authorize('accounts.view');
 
         $query = Account::query()
+            ->with('parent')
+                ->when(
+        $request->filled('class'),
+        fn ($q) => $q->where(
+            'code',
+            'like',
+            $request->string('class')->value().'%'
+        )
+    )
             ->when($request->string('search')->trim()->value(), fn ($q, $term) => $q->where(
-                fn ($w) => $w->where('code', 'like', $this->like($term))->orWhere('name', 'like', $this->like($term))
+                fn ($w) => $w->where('code', 'like', $this->like($term))
+                    ->orWhere('name', 'like', $this->like($term))
             ))
             ->when($request->filled('type'), fn ($q) => $q->where('type', $request->string('type')->value()))
             ->when($request->filled('category'), fn ($q) => $q->where('category', $request->string('category')->value()))
@@ -35,8 +45,17 @@ class AccountController extends Controller
     {
         $this->authorize('accounts.create');
 
-        $account = Account::create($request->validated() + ['company_id' => $request->user()->company_id]);
-        $this->audit->log('account.created', $account, ['code' => $account->code]);
+        $account = Account::create(
+            $request->validated() + ['company_id' => $request->user()->company_id]
+        );
+
+        $account->load('parent');
+
+        $this->audit->log('account.created', $account, [
+            'code' => $account->code,
+            'parent_id' => $account->parent_id,
+            'is_group' => $account->is_group,
+        ]);
 
         return AccountResource::make($account)->response()->setStatusCode(201);
     }
@@ -44,6 +63,8 @@ class AccountController extends Controller
     public function show(Account $account): AccountResource
     {
         $this->authorize('accounts.view');
+
+        $account->loadMissing('parent');
 
         return AccountResource::make($account);
     }
@@ -55,9 +76,12 @@ class AccountController extends Controller
         $account->fill($request->validated());
         $changed = array_keys($account->getDirty());
         $account->save();
+        $account->load('parent');
 
         if ($changed !== []) {
-            $this->audit->log('account.updated', $account, ['fields' => $changed]);
+            $this->audit->log('account.updated', $account, [
+                'fields' => $changed,
+            ]);
         }
 
         return AccountResource::make($account);

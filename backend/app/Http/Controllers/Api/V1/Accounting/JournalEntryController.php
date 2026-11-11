@@ -24,7 +24,14 @@ class JournalEntryController extends Controller
     {
         $this->authorize('viewAny', JournalEntry::class);
 
-        return $this->listResponse($request, $this->filtered($request)->with('journal')->latest('entry_date')->latest('id'), JournalEntryResource::class);
+        return $this->listResponse(
+    $request,
+    $this->filtered($request)
+        ->with(['journal', 'lines.account'])
+        ->latest('entry_date')
+        ->latest('id'),
+    JournalEntryResource::class
+);
     }
 
     public function store(JournalEntryRequest $request): JsonResponse

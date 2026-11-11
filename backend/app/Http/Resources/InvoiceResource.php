@@ -25,7 +25,7 @@ class InvoiceResource extends JsonResource
             'subtotal' => $this->subtotal,
             'tax_total' => $this->tax_total,
             'total' => $this->total,
-            'amount_paid' => $this->amount_paid,
+            'amount_paid' => Money::fromCents(Money::toCents($this->amount_paid ?? '0')),
             'amount_due' => Money::fromCents($this->amountDueCents()),
             'notes' => $this->notes,
             'journal_entry_id' => $this->journal_entry_id,
