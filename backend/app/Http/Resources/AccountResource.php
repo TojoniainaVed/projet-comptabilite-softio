@@ -12,11 +12,19 @@ class AccountResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'parent_id' => $this->parent_id,
             'code' => $this->code,
             'name' => $this->name,
             'type' => $this->type,
             'category' => $this->category,
+            'is_group' => $this->is_group,
             'is_active' => $this->is_active,
+
+            'parent' => $this->whenLoaded('parent', fn () => $this->parent ? [
+                'id' => $this->parent->id,
+                'code' => $this->parent->code,
+                'name' => $this->parent->name,
+            ] : null),
         ];
     }
 }

@@ -17,6 +17,7 @@ class AccountResolver
         $account = Account::query()
             ->where('category', $category)
             ->where('is_active', true)
+            ->where('is_group', false)
             ->orderBy('code')
             ->first();
 

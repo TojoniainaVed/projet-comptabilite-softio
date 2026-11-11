@@ -65,11 +65,18 @@ export type AccountCategory =
 
 export interface Account {
   id: number
+  parent_id: number | null
   code: string
   name: string
   type: AccountType
   category: AccountCategory | null
+  is_group: boolean
   is_active: boolean
+  parent?: {
+    id: number
+    code: string
+    name: string
+  } | null
 }
 
 export type JournalType = 'sales' | 'purchases' | 'bank' | 'cash' | 'general'

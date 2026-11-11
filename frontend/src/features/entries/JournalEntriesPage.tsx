@@ -1,4 +1,4 @@
-import { Download, Plus } from 'lucide-react'
+import { Download, Plus, RotateCcw } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
@@ -14,7 +14,7 @@ import { useListParams } from '@/hooks/useListParams'
 import { api } from '@/lib/api-client'
 import { EntryStatusBadge } from '@/components/ui/StatusBadges'
 import { errorMessage } from '@/lib/form-errors'
-import { formatDate } from '@/lib/utils'
+import { formatDate, formatMoney, toCents } from '@/lib/utils'
 import { entriesApi } from '@/features/entries/api'
 import { journalsApi } from '@/features/settings/api'
 import type { JournalEntry } from '@/types/api'
@@ -27,17 +27,61 @@ export function JournalEntriesPage() {
   const query = entriesApi.useList({ ...list.params, per_page: 25 })
   const journals = journalsApi.useOptions()
 
+  const totalAmount = (entry: JournalEntry, type: 'debit' | 'credit') => {
+    const cents = entry.lines?.reduce((total, line) => total + toCents(line[type]), 0) ?? 0
+
+    return formatMoney(cents / 100)
+  }
+
   const columns: Column<JournalEntry>[] = [
     {
       key: 'ref',
       header: 'Référence',
       cell: (e) => <span className="font-mono">{e.reference ?? '—'}</span>,
     },
-    { key: 'date', header: 'Date', cell: (e) => formatDate(e.entry_date) },
-    { key: 'journal', header: 'Journal', cell: (e) => e.journal?.code ?? '—' },
-    { key: 'desc', header: 'Libellé', cell: (e) => e.description },
-    { key: 'status', header: 'Statut', cell: (e) => <EntryStatusBadge status={e.status} /> },
+    {
+      key: 'date',
+      header: 'Date',
+      cell: (e) => formatDate(e.entry_date),
+    },
+    {
+      key: 'journal',
+      header: 'Journal',
+      cell: (e) => e.journal?.code ?? '—',
+    },
+    {
+      key: 'desc',
+      header: 'Libellé',
+      cell: (e) => e.description,
+    },
+    {
+      key: 'debit',
+      header: 'Total débit',
+      align: 'right',
+      cell: (e) => <span className="font-medium tabular-nums">{totalAmount(e, 'debit')}</span>,
+    },
+    {
+      key: 'credit',
+      header: 'Total crédit',
+      align: 'right',
+      cell: (e) => <span className="font-medium tabular-nums">{totalAmount(e, 'credit')}</span>,
+    },
+    {
+      key: 'status',
+      header: 'Statut',
+      cell: (e) => <EntryStatusBadge status={e.status} />,
+    },
   ]
+
+  const resetFilters = () => {
+    list.setFilter('search', '')
+    list.setFilter('status', '')
+    list.setFilter('journal_id', '')
+    list.setFilter('from', '')
+    list.setFilter('to', '')
+  }
+
+  const hasFilters = Object.values(list.filters).some((value) => value !== '')
 
   const exportCsv = async () => {
     try {
@@ -79,13 +123,15 @@ export function JournalEntriesPage() {
           </>
         }
       />
+
       <Card padded={false}>
-        <div className="grid gap-3 border-b border-line p-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-3 border-b border-line p-4 sm:grid-cols-2 lg:grid-cols-6">
           <SearchInput
             value={list.filters.search ?? ''}
             onChange={(v) => list.setFilter('search', v)}
             placeholder="Libellé, référence"
           />
+
           <Select
             aria-label="Filtrer par statut"
             value={list.filters.status ?? ''}
@@ -96,6 +142,7 @@ export function JournalEntriesPage() {
             <option value="posted">Validée</option>
             <option value="reversed">Contrepassée</option>
           </Select>
+
           <Select
             aria-label="Filtrer par journal"
             value={list.filters.journal_id ?? ''}
@@ -108,17 +155,29 @@ export function JournalEntriesPage() {
               </option>
             ))}
           </Select>
+
           <DatePicker
             aria-label="Du"
             value={list.filters.from ?? ''}
             onChange={(e) => list.setFilter('from', e.target.value)}
           />
+
           <DatePicker
             aria-label="Au"
             value={list.filters.to ?? ''}
             onChange={(e) => list.setFilter('to', e.target.value)}
           />
+
+          <Button
+            variant="secondary"
+            disabled={!hasFilters}
+            icon={<RotateCcw className="size-4" aria-hidden="true" />}
+            onClick={resetFilters}
+          >
+            Réinitialiser
+          </Button>
         </div>
+
         <DataTable
           caption="Liste des écritures"
           columns={columns}
@@ -131,6 +190,7 @@ export function JournalEntriesPage() {
           emptyTitle="Aucune écriture"
           emptyDescription="Aucune écriture ne correspond aux filtres."
         />
+
         <Pagination meta={query.data?.meta} onPageChange={list.setPage} />
       </Card>
     </>

@@ -82,16 +82,32 @@ class ExpenseService
         });
     }
 
-    private function assertAccounts(int $expenseAccountId, int $paidFromId): void
-    {
-        $expenseAccount = Account::query()->whereKey($expenseAccountId)->where('is_active', true)->first();
-        $paidFrom = Account::query()->whereKey($paidFromId)->where('is_active', true)->first();
+   private function assertAccounts(int $expenseAccountId, int $paidFromId): void
+{
+    $expenseAccount = Account::query()
+        ->whereKey($expenseAccountId)
+        ->where('is_active', true)
+        ->where('is_group', false)
+        ->first();
 
-        if ($expenseAccount === null || $expenseAccount->type !== 'expense') {
-            throw new BusinessRuleException('Le compte de dépense doit être un compte de charges actif.', 'invalid_expense_account');
-        }
-        if ($paidFrom === null || $paidFrom->id === $expenseAccount->id) {
-            throw new BusinessRuleException('Le compte de règlement est invalide.', 'invalid_paid_from_account');
-        }
+    $paidFrom = Account::query()
+        ->whereKey($paidFromId)
+        ->where('is_active', true)
+        ->where('is_group', false)
+        ->first();
+
+    if ($expenseAccount === null || $expenseAccount->type !== 'expense') {
+        throw new BusinessRuleException(
+            'Le compte de dépense doit être un compte de charges actif.',
+            'invalid_expense_account'
+        );
     }
+
+    if ($paidFrom === null || $paidFrom->id === $expenseAccount->id) {
+        throw new BusinessRuleException(
+            'Le compte de règlement est invalide.',
+            'invalid_paid_from_account'
+        );
+    }
+}
 }

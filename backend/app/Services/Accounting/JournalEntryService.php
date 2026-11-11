@@ -193,9 +193,17 @@ class JournalEntryService
     {
         $accountIds = collect($lines)->pluck('account_id')->unique()->values();
         // Le scope d'entreprise garantit que seuls les comptes de l'entreprise courante sont comptés.
-        if (Account::query()->whereIn('id', $accountIds)->count() !== $accountIds->count()) {
-            throw new BusinessRuleException('Un des comptes référencés est invalide.', 'invalid_account');
-        }
+       if (
+    Account::query()
+        ->whereIn('id', $accountIds)
+        ->where('is_group', false)
+        ->count() !== $accountIds->count()
+) {
+    throw new BusinessRuleException(
+        'Un des comptes référencés est invalide ou correspond à un compte de regroupement.',
+        'invalid_account'
+    );
+}
 
         $rows = [];
         foreach ($lines as $line) {

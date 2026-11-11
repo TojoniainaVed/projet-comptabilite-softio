@@ -44,17 +44,27 @@ class SettingsService
     }
 
     /** Sous-ensemble exposé publiquement (écran de connexion). */
-    public function publicSettings(): array
-    {
-        $all = $this->all();
 
-        return [
-            'platform_name' => $all['platform_name'],
-            'brand_color' => $all['brand_color'],
-            'default_locale' => $all['default_locale'],
-            'password_min_length' => (int) $all['password_min_length'],
-            'registration_enabled' => (bool) config('softio.registration.enabled'),
-            'terms_url' => config('softio.registration.terms_url') ?: null,
-        ];
+    /** Sous-ensemble exposé publiquement (écran de connexion). */
+   public function publicSettings(): array
+{
+    $all = $this->all();
+
+    $registrationEnabled = (bool) config('softio.registration.enabled');
+
+    $public = [
+        'platform_name' => $all['platform_name'],
+        'brand_color' => $all['brand_color'],
+        'default_locale' => $all['default_locale'],
+        'registration_enabled' => $registrationEnabled,
+    ];
+
+    if ($registrationEnabled) {
+        $public['password_min_length'] = (int) $all['password_min_length'];
+        $public['terms_url'] = config('softio.registration.terms_url') ?: null;
     }
+
+    return $public;
+}
+
 }

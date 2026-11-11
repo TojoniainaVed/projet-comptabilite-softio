@@ -6,16 +6,39 @@ use App\Models\Invoice;
 use App\Models\JournalEntry;
 use App\Support\Money;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-/** Indicateurs du tableau de bord financier, tous calculés sur les données réelles de l'entreprise. */
 class AccountingDashboardService
 {
-    public function __construct(private readonly ReportService $reports) {}
+    public function __construct(
+        private readonly ReportService $reports
+    ) {}
 
-    /** @return array<string, mixed> */
+    /**
+     * Indicateurs du tableau de bord comptable d'une entreprise.
+     *
+     * @return array<string, mixed>
+     */
     public function summary(int $companyId): array
     {
+        if ($companyId <= 0) {
+            abort(404);
+        }
+
+        // Un utilisateur authentifiÃ© ne peut consulter que son entreprise.
+        // En console, Auth::user() peut Ãªtre null : les requÃªtes utilisent
+        // alors obligatoirement le companyId transmis.
+        $user = Auth::user();
+
+        if (
+            $user !== null
+            && (int) $user->company_id !== $companyId
+        ) {
+            abort(404);
+        }
+
         $today = CarbonImmutable::today();
         $monthStart = $today->startOfMonth();
 
@@ -25,7 +48,6 @@ class AccountingDashboardService
             $today->toDateString()
         );
 
-        // Résultat comptable du mois : produits - charges.
         $netResult = Money::fromCents(
             Money::toCents($month['total_income'])
             - Money::toCents($month['total_expenses'])
@@ -34,23 +56,33 @@ class AccountingDashboardService
         return [
             'treasury_total' => $this->reports->treasury($companyId)['total'],
 
-            'receivable_outstanding' => $this->outstanding(Invoice::TYPE_CUSTOMER),
-            'payable_outstanding' => $this->outstanding(Invoice::TYPE_SUPPLIER),
+            'receivable_outstanding' => $this->outstanding(
+                $companyId,
+                Invoice::TYPE_CUSTOMER
+            ),
+
+            'payable_outstanding' => $this->outstanding(
+                $companyId,
+                Invoice::TYPE_SUPPLIER
+            ),
 
             'revenue_this_month' => $month['total_income'],
             'expenses_this_month' => $month['total_expenses'],
             'net_result_this_month' => $netResult,
 
             'draft_entries' => JournalEntry::query()
+                ->where('company_id', $companyId)
                 ->where('status', JournalEntry::STATUS_DRAFT)
                 ->count(),
 
             'overdue_customer_invoices' => $this->overdueInvoices(
+                $companyId,
                 Invoice::TYPE_CUSTOMER,
                 $today
             ),
 
             'overdue_supplier_invoices' => $this->overdueInvoices(
+                $companyId,
                 Invoice::TYPE_SUPPLIER,
                 $today
             ),
@@ -58,6 +90,7 @@ class AccountingDashboardService
             'monthly' => $this->monthlySeries($companyId, $today),
 
             'recent_entries' => JournalEntry::query()
+                ->where('company_id', $companyId)
                 ->with('journal:id,code')
                 ->latest('id')
                 ->limit(5)
@@ -69,45 +102,52 @@ class AccountingDashboardService
                     'description',
                     'status',
                 ])
-                ->map(fn (JournalEntry $e) => [
-                    'id' => $e->id,
-                    'reference' => $e->reference,
-                    'journal' => $e->journal?->code,
-                    'entry_date' => $e->entry_date->toDateString(),
-                    'description' => $e->description,
-                    'status' => $e->status,
+                ->map(fn (JournalEntry $entry) => [
+                    'id' => $entry->id,
+                    'reference' => $entry->reference,
+                    'journal' => $entry->journal?->code,
+                    'entry_date' => $entry->entry_date->toDateString(),
+                    'description' => $entry->description,
+                    'status' => $entry->status,
                 ])
                 ->all(),
         ];
     }
 
     /**
-     * Montant restant à payer des factures validées.
+     * Montant restant Ã  payer des factures validÃ©es d'une entreprise.
      */
-    private function outstanding(string $type): string
+    private function outstanding(int $companyId, string $type): string
     {
         $cents = Invoice::query()
+            ->where('company_id', $companyId)
             ->where('type', $type)
             ->where('status', Invoice::STATUS_POSTED)
             ->get(['total', 'amount_paid'])
-            ->sum(fn (Invoice $invoice) => $invoice->amountDueCents());
+            ->sum(
+                fn (Invoice $invoice) => $invoice->amountDueCents()
+            );
 
         return Money::fromCents((int) $cents);
     }
 
     /**
-     * Nombre de factures validées, échues et ayant encore un solde à payer.
+     * Nombre de factures validÃ©es, Ã©chues et ayant encore un solde Ã  payer.
      */
     private function overdueInvoices(
+        int $companyId,
         string $type,
         CarbonImmutable $today
     ): int {
         return Invoice::query()
+            ->where('company_id', $companyId)
             ->where('type', $type)
             ->where('status', Invoice::STATUS_POSTED)
             ->whereDate('due_date', '<', $today->toDateString())
             ->get(['total', 'amount_paid'])
-            ->filter(fn (Invoice $invoice) => $invoice->amountDueCents() > 0)
+            ->filter(
+                fn (Invoice $invoice) => $invoice->amountDueCents() > 0
+            )
             ->count();
     }
 
@@ -123,16 +163,33 @@ class AccountingDashboardService
         $start = $today->startOfMonth()->subMonths(5);
 
         $rows = DB::table('journal_entry_lines as l')
-            ->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')
-            ->join('accounts as a', 'a.id', '=', 'l.account_id')
+            ->join(
+                'journal_entries as e',
+                'e.id',
+                '=',
+                'l.journal_entry_id'
+            )
+            ->join(
+                'accounts as a',
+                'a.id',
+                '=',
+                'l.account_id'
+            )
             ->where('e.company_id', $companyId)
-            ->whereIn('e.status', ['posted', 'reversed'])
+            ->where('a.company_id', $companyId)
+            ->whereIn('e.status', [
+                JournalEntry::STATUS_POSTED,
+                JournalEntry::STATUS_REVERSED,
+            ])
             ->whereIn('a.type', ['income', 'expense'])
             ->whereDate('e.entry_date', '>=', $start->toDateString())
             ->whereDate('e.entry_date', '<=', $today->toDateString())
             ->groupBy('e.entry_date', 'a.type')
             ->selectRaw(
-                'e.entry_date as day, a.type, SUM(l.debit) as debit, SUM(l.credit) as credit'
+                'e.entry_date as day,
+                 a.type,
+                 SUM(l.debit) as debit,
+                 SUM(l.credit) as credit'
             )
             ->get();
 
