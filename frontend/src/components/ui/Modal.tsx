@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, type ReactNode } from 'react'
+﻿import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -14,6 +14,8 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg'
   children: ReactNode
   footer?: ReactNode
+  className?: string
+  variant?: 'default' | 'admin'
 }
 
 const sizes = { sm: 'max-w-md', md: 'max-w-xl', lg: 'max-w-3xl' }
@@ -27,6 +29,8 @@ export function Modal({
   size = 'md',
   children,
   footer,
+  className,
+  variant = 'default',
 }: ModalProps) {
   const titleId = useId()
   const descriptionId = useId()
@@ -91,7 +95,9 @@ export function Modal({
         tabIndex={-1}
         className={cn(
           'relative flex max-h-[90vh] w-full flex-col rounded-t-card bg-surface shadow-overlay sm:rounded-card',
+          variant === 'admin' && 'softio-admin-modal',
           sizes[size],
+          className,
         )}
       >
         <header className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">

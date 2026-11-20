@@ -29,10 +29,42 @@ class RolesAndPermissionsSeeder extends Seeder
                 'is_system' => true,
             ]);
 
-            // Création initiale uniquement : les ajustements faits ensuite par un administrateur sont conservés.
+                       // Création initiale : attribution de toutes les permissions par défaut.
             if ($role->wasRecentlyCreated) {
-                $role->permissions()->sync(array_map(fn (string $p) => $permissionIds[$p], $definition['permissions']));
+                $role->permissions()->sync(
+                    array_map(fn (string $p) => $permissionIds[$p], $definition['permissions'])
+                );
             }
+
+            // Ajout des nouvelles permissions Avoir sans supprimer les permissions existantes.
+            $creditNotePermissions = array_filter(
+                $definition['permissions'],
+                fn (string $permission): bool => str_starts_with($permission, 'credit_notes.')
+            );
+
+            if ($creditNotePermissions !== []) {
+                $role->permissions()->syncWithoutDetaching(
+                    array_map(
+                        fn (string $permission): int => $permissionIds[$permission],
+                        $creditNotePermissions
+                    )
+                );
+            }
+
+// Ajout des nouvelles permissions Avoir sans supprimer les permissions existantes.
+$creditNotePermissions = array_filter(
+    $definition['permissions'],
+    fn (string $permission): bool => str_starts_with($permission, 'credit_notes.')
+);
+
+if ($creditNotePermissions !== []) {
+    $role->permissions()->syncWithoutDetaching(
+        array_map(
+            fn (string $permission): int => $permissionIds[$permission],
+            $creditNotePermissions
+        )
+    );
+}
         }
     }
 }

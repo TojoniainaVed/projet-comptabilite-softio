@@ -1,5 +1,7 @@
 import { Badge, type BadgeTone } from '@/components/ui/Badge'
 import type { EntryStatus, InvoiceStatus } from '@/types/api'
+import type { CreditNoteStatus } from '@/features/credit-notes/api'
+
 
 const entryTones: Record<EntryStatus, [BadgeTone, string]> = {
   draft: ['neutral', 'Brouillon'],
@@ -26,4 +28,16 @@ export function InvoiceStatusBadge({ status }: { status: InvoiceStatus }) {
 
 export function ActiveBadge({ active }: { active: boolean }) {
   return <Badge tone={active ? 'success' : 'neutral'}>{active ? 'Actif' : 'Inactif'}</Badge>
+}
+
+
+const creditNoteTones: Record<CreditNoteStatus, [BadgeTone, string]> = {
+  draft: ['neutral', 'Brouillon'],
+  posted: ['success', 'Validé'],
+  cancelled: ['danger', 'Annulé'],
+}
+
+export function CreditNoteStatusBadge({ status }: { status: CreditNoteStatus }) {
+  const [tone, label] = creditNoteTones[status]
+  return <Badge tone={tone}>{label}</Badge>
 }

@@ -8,6 +8,8 @@ interface SearchInputProps {
   placeholder?: string
   label?: string
   delay?: number
+  className?: string
+  variant?: 'default' | 'admin'
 }
 
 /** Champ de recherche avec anti-rebond : la requête n'est émise qu'après une courte pause de saisie. */
@@ -17,6 +19,8 @@ export function SearchInput({
   placeholder = 'Rechercher…',
   label = 'Rechercher',
   delay = 300,
+  className,
+  variant = 'default',
 }: SearchInputProps) {
   const [draft, setDraft] = useState(value)
 
@@ -27,7 +31,13 @@ export function SearchInput({
   }, [draft, value, onChange, delay])
 
   return (
-    <div className="relative w-full sm:max-w-xs">
+    <div
+      className={
+        variant === 'admin'
+          ? 'softio-admin-search-shell relative w-full sm:max-w-xs'
+          : 'relative w-full sm:max-w-xs'
+      }
+    >
       <Search
         className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted"
         aria-hidden="true"
@@ -38,7 +48,9 @@ export function SearchInput({
         placeholder={placeholder}
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
-        className="pl-9"
+        className={
+          variant === 'admin' ? 'softio-admin-search-input pl-9' : `pl-9 ${className ?? ''}`
+        }
       />
     </div>
   )

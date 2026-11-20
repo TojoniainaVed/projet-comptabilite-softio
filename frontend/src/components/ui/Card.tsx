@@ -5,12 +5,25 @@ interface CardProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
   title?: ReactNode
   actions?: ReactNode
   padded?: boolean
+  variant?: 'default' | 'admin'
 }
 
-export function Card({ title, actions, padded = true, className, children, ...props }: CardProps) {
+export function Card({
+  title,
+  actions,
+  padded = true,
+  variant = 'default',
+  className,
+  children,
+  ...props
+}: CardProps) {
   return (
     <section
-      className={cn('rounded-card border border-line bg-surface shadow-card', className)}
+      className={cn(
+        'rounded-card border border-line bg-surface shadow-card',
+        variant === 'admin' && 'softio-admin-card',
+        className,
+      )}
       {...props}
     >
       {(title || actions) && (

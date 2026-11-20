@@ -1,0 +1,93 @@
+﻿@layer components {
+  .softio-admin-shell {
+    background:
+      radial-gradient(circle at top left, rgba(7, 141, 132, 0.08), transparent 28%),
+      linear-gradient(180deg, #edf6f5 0%, #f7faf9 100%);
+    color: #17333b;
+  }
+
+  .softio-admin-main {
+    background: transparent;
+  }
+
+  .softio-admin-main > div {
+    max-width: 1800px;
+    margin-inline: auto;
+  }
+
+  .softio-admin-sidebar {
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .softio-admin-page-header {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(16, 50, 57, 0.08);
+  }
+
+  .softio-admin-shell h1,
+  .softio-admin-shell h2,
+  .softio-admin-shell h3,
+  .softio-admin-shell h4,
+  .softio-admin-shell h5,
+  .softio-admin-shell h6 {
+    letter-spacing: -0.02em;
+    color: #17333b;
+  }
+
+  .softio-admin-shell section.rounded-card,
+  .softio-admin-shell .softio-admin-card,
+  .softio-admin-shell [class*='rounded-card'] {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: #dfe8eb;
+    box-shadow: 0 12px 24px rgba(16, 43, 49, 0.04);
+  }
+
+  .softio-admin-shell section.rounded-card > header,
+  .softio-admin-shell .softio-admin-card > header,
+  .softio-admin-shell [class*='rounded-card'] > header {
+    background: linear-gradient(180deg, rgba(246, 249, 250, 0.95), rgba(255, 255, 255, 0.95));
+    border-bottom-color: rgba(16, 52, 57, 0.08);
+  }
+
+  .softio-admin-shell thead tr {
+    background: #f5f9fa;
+  }
+
+  .softio-admin-shell th {
+    color: #4f6670;
+    letter-spacing: 0.08em;
+  }
+
+  .softio-admin-shell tbody tr {
+    transition: background-color 0.16s ease;
+  }
+
+  .softio-admin-shell tbody tr:hover {
+    background: rgba(7, 141, 132, 0.035);
+  }
+
+  .softio-admin-shell .softio-admin-search-shell input,
+  .softio-admin-shell input,
+  .softio-admin-shell select,
+  .softio-admin-shell textarea {
+    background-color: rgba(255, 255, 255, 0.96);
+    border-color: #dfe8eb;
+  }
+
+  .softio-admin-shell .softio-admin-search-shell input:focus,
+  .softio-admin-shell input:focus,
+  .softio-admin-shell select:focus,
+  .softio-admin-shell textarea:focus {
+    border-color: rgba(8, 125, 121, 0.52);
+    box-shadow: 0 0 0 3px rgba(8, 125, 121, 0.12);
+  }
+
+  .softio-admin-shell .softio-admin-modal {
+    border: 1px solid rgba(16, 52, 57, 0.08);
+    box-shadow: 0 24px 60px rgba(18, 31, 38, 0.18);
+  }
+
+  .softio-admin-shell .softio-admin-modal footer {
+    background: rgba(244, 247, 247, 0.8);
+  }
+}

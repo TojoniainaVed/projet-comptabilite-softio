@@ -156,7 +156,14 @@ export interface Invoice {
   type: InvoiceType
   number: string | null
   supplier_reference: string | null
-  partner?: { id: number; name: string }
+ partner?: {
+  id: number
+  name: string
+  email?: string | null
+  phone?: string | null
+  tax_id?: string | null
+  address?: string | null
+}
   partner_id: number
   invoice_date: string
   due_date: string

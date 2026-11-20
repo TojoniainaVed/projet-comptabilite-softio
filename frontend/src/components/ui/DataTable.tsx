@@ -23,6 +23,7 @@ interface DataTableProps<T> {
   emptyDescription?: string
   emptyAction?: ReactNode
   onRowClick?: (row: T) => void
+  variant?: 'default' | 'admin'
 }
 
 /** Tableau de données : états chargement (squelettes), erreur, vide ; défilement horizontal sur mobile. */
@@ -38,6 +39,7 @@ export function DataTable<T>({
   emptyDescription,
   emptyAction,
   onRowClick,
+  variant = 'default',
 }: DataTableProps<T>) {
   if (error) return <ErrorState message={error} onRetry={onRetry} />
 
@@ -46,7 +48,7 @@ export function DataTable<T>({
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className={cn('overflow-x-auto', variant === 'admin' && 'softio-admin-table')}>
       <table className="w-full min-w-[640px] border-collapse text-sm">
         <caption className="sr-only">{caption}</caption>
         <thead>

@@ -192,6 +192,39 @@ export const routes: RouteObject[] = [
                   ),
                 },
               ]),
+
+              guard('credit_notes.view', [
+                {
+                  path: 'credit-notes',
+                  ...page(() =>
+                    import('@/features/credit-notes/CreditNotesHomePage').then(
+                      (m) => m.CreditNotesHomePage,
+                    ),
+                  ),
+                },
+                {
+                  path: 'credit-notes/customers',
+                  ...page(
+                    () =>
+                      import('@/features/credit-notes/CreditNotesPage').then(
+                        (m) => m.CreditNotesPage,
+                      ),
+                    { kind: 'customer' as const },
+                  ),
+                },
+                {
+                  path: 'credit-notes/suppliers',
+                  ...page(
+                    () =>
+                      import('@/features/credit-notes/CreditNotesPage').then(
+                        (m) => m.CreditNotesPage,
+                      ),
+                    { kind: 'supplier' as const },
+                  ),
+                },
+              ]),
+
+              
               guard('invoices.update', [
                 {
                   path: 'sales/invoices/:id/edit',

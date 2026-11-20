@@ -2,11 +2,11 @@
 
 Module de comptabilité de l'ERP **Softio** : espace comptable (écritures en partie double, plan comptable, factures, paiements, dépenses, rapports) et **espace d'administration** séparé (utilisateurs, rôles et permissions, entreprises, paramètres, journal d'audit, sessions).
 
-| Couche | Technologies |
-| --- | --- |
-| Frontend | React 19, TypeScript (`strict`), Vite 7, Tailwind CSS 4, React Router 7, TanStack Query 5, React Hook Form + Zod, Lucide React, Vitest + Testing Library |
-| Backend | PHP ≥ 8.1, Laravel 10, Laravel Sanctum 3 (jetons Bearer), Eloquent, Form Requests, API Resources, Policies/Gates |
-| Base de données | PostgreSQL (SQLite en mémoire pour les tests PHPUnit) |
+| Couche          | Technologies                                                                                                                                             |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frontend        | React 19, TypeScript (`strict`), Vite 7, Tailwind CSS 4, React Router 7, TanStack Query 5, React Hook Form + Zod, Lucide React, Vitest + Testing Library |
+| Backend         | PHP ≥ 8.1, Laravel 10, Laravel Sanctum 3 (jetons Bearer), Eloquent, Form Requests, API Resources, Policies/Gates                                         |
+| Base de données | PostgreSQL (SQLite en mémoire pour les tests PHPUnit)                                                                                                    |
 
 > ⚠️ **État de vérification — lisez [« Ce qui a été vérifié »](#ce-qui-a-été-vérifié).**
 > Le frontend a été compilé et testé. Le backend a été écrit et vérifié syntaxiquement (`php -l`) mais **ses tests PHPUnit, ses migrations et son exécution n'ont pas pu être lancés** dans l'environnement de génération (Composer/Packagist inaccessible). Lancez `composer install` puis `php artisan test` en premier.
@@ -77,7 +77,8 @@ Vos clients créent **eux-mêmes** leur entreprise et leur compte administrateur
 - `TERMS_URL` : adresse de vos conditions d'utilisation, affichée sur la page d'inscription. **Rédigez vos conditions et votre politique de confidentialité vous-même** : le projet n'en fournit pas.
 
 ### 5. Premiers pas
-81y;3nZC3)vr1xxj
+
+Le mot de passe du super administrateur est affiché une seule fois par php artisan db:seed.
 
 1. Connectez-vous avec le super administrateur sur http://localhost:5173/login → espace **Administration**.
 2. Créez une **entreprise** (le plan comptable simplifié, 5 journaux et l'exercice de l'année en cours sont créés automatiquement).
@@ -88,32 +89,32 @@ Le super administrateur n'a volontairement **aucun accès** aux données comptab
 
 ## Commandes utiles
 
-| Où | Commande | Rôle |
-| --- | --- | --- |
-| `backend` | `php artisan test` | Tests PHPUnit (SQLite en mémoire, aucune base à préparer) |
-| `backend` | `vendor/bin/pint --test` | Style de code |
-| `frontend` | `npm run dev` | Serveur de développement |
-| `frontend` | `npm run typecheck` | TypeScript strict |
-| `frontend` | `npm run lint` / `npm run format:check` | ESLint / Prettier |
-| `frontend` | `npm run test` | Vitest |
-| `frontend` | `npm run build` | Typecheck + build de production |
-| `frontend` | `npm run check` | typecheck + lint + format + tests |
-| racine | `./scripts/setup.sh` | Installe les dépendances des deux projets |
-| racine | `./scripts/check.sh` | Lance toutes les vérifications |
+| Où         | Commande                                | Rôle                                                      |
+| ---------- | --------------------------------------- | --------------------------------------------------------- |
+| `backend`  | `php artisan test`                      | Tests PHPUnit (SQLite en mémoire, aucune base à préparer) |
+| `backend`  | `vendor/bin/pint --test`                | Style de code                                             |
+| `frontend` | `npm run dev`                           | Serveur de développement                                  |
+| `frontend` | `npm run typecheck`                     | TypeScript strict                                         |
+| `frontend` | `npm run lint` / `npm run format:check` | ESLint / Prettier                                         |
+| `frontend` | `npm run test`                          | Vitest                                                    |
+| `frontend` | `npm run build`                         | Typecheck + build de production                           |
+| `frontend` | `npm run check`                         | typecheck + lint + format + tests                         |
+| racine     | `./scripts/setup.sh`                    | Installe les dépendances des deux projets                 |
+| racine     | `./scripts/check.sh`                    | Lance toutes les vérifications                            |
 
 ## Ce qui a été vérifié
 
 Vérifications **réellement exécutées** lors de la génération :
 
-| Élément | Résultat |
-| --- | --- |
-| Frontend : `tsc --noEmit` (strict) | ✅ sans erreur |
-| Frontend : ESLint | ✅ sans erreur ni avertissement |
-| Frontend : Prettier `--check` | ✅ |
-| Frontend : Vitest | ✅ **66 tests** (client API, calculs, composants, formulaires, gardes de routes, idempotence des paiements, inscription / mot de passe oublié) |
-| Frontend : `vite build` | ✅ |
-| Backend : `php -l` sur tous les fichiers PHP | ✅ aucune erreur de syntaxe |
-| Backend : 14 tests unitaires purs (`Money`, `EntryBalance`, `InvoiceCalculator`, `PermissionCatalog`) | ✅ exécutés avec un mini-lanceur maison, car PHPUnit n'était pas installable |
+| Élément                                                                                               | Résultat                                                                                                                                       |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frontend : `tsc --noEmit` (strict)                                                                    | ✅ sans erreur                                                                                                                                 |
+| Frontend : ESLint                                                                                     | ✅ sans erreur ni avertissement                                                                                                                |
+| Frontend : Prettier `--check`                                                                         | ✅                                                                                                                                             |
+| Frontend : Vitest                                                                                     | ✅ **66 tests** (client API, calculs, composants, formulaires, gardes de routes, idempotence des paiements, inscription / mot de passe oublié) |
+| Frontend : `vite build`                                                                               | ✅                                                                                                                                             |
+| Backend : `php -l` sur tous les fichiers PHP                                                          | ✅ aucune erreur de syntaxe                                                                                                                    |
+| Backend : 14 tests unitaires purs (`Money`, `EntryBalance`, `InvoiceCalculator`, `PermissionCatalog`) | ✅ exécutés avec un mini-lanceur maison, car PHPUnit n'était pas installable                                                                   |
 
 **Non exécuté** (à faire chez vous) :
 
