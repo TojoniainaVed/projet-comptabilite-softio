@@ -42,6 +42,8 @@ export interface User {
 
 export interface AuthUser extends User {
   permissions: string[]
+  /** Compte venu de Softio (projet principal) : la déconnexion ramène vers Softio. */
+  from_softio?: boolean
 }
 
 export interface Company {

@@ -15,7 +15,7 @@ class Company extends Model
     public const STATUS_SUSPENDED = 'suspended';
 
     protected $fillable = [
-        'name', 'legal_name', 'tax_id', 'email', 'phone', 'address',
+        'softio_organisation_id', 'name', 'legal_name', 'tax_id', 'email', 'phone', 'address',
         'currency', 'locale', 'status',
     ];
 

@@ -15,7 +15,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory;
 
     protected $fillable = [
-        'company_id', 'role_id', 'name', 'email', 'password', 'is_active', 'last_login_at',
+        'softio_user_id', 'company_id', 'role_id', 'name', 'email', 'password', 'is_active', 'last_login_at',
         'email_verified_at', 'must_verify_email',
     ];
 
