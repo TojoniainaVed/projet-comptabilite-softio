@@ -146,6 +146,24 @@ class SoftioSsoTest extends FeatureTestCase
         $this->assertSame(0, User::query()->where('softio_user_id', 10)->firstOrFail()->tokens()->count());
     }
 
+    public function test_sans_id_de_module_la_connexion_est_refusee_et_la_session_fermee(): void
+    {
+        $this->simulerSoftio($this->infos(utilisateurId: 10, organisationId: 10));
+        $token = $this->postJson('/api/v1/auth/sso', ['code' => 'x'])->json('token');
+
+        // SOFTIO_MODULE_ID oublié dans le .env
+        config(['softio.sso.module_id' => null]);
+        Cache::flush();
+
+        $this->postJson('/api/v1/auth/sso', ['code' => 'y'])
+            ->assertStatus(422)
+            ->assertJsonPath('code', 'softio_not_configured');
+
+        $this->withToken($token)->getJson('/api/v1/auth/me')
+            ->assertForbidden()
+            ->assertJsonPath('code', 'softio_access_inactive');
+    }
+
     public function test_les_comptes_locaux_ne_sont_pas_verifies_aupres_de_softio(): void
     {
         $this->signIn('accountant');

@@ -381,7 +381,7 @@ export function AccountsPage() {
         ) : (
           /* Tableau des comptes */
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[780px] text-left">
+            <table className="w-full min-w-[780px] text-left" aria-label="Liste des comptes">
               <thead className="border-b border-line bg-surface text-sm text-muted">
                 <tr>
                   <th className="px-4 py-3 font-medium">Code</th>

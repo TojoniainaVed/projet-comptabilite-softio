@@ -28,8 +28,9 @@ class SoftioSsoService
     {
         $infos = $this->softio->echanger($code);
 
-        $moduleAttendu = config('softio.sso.module_id');
-        if ($moduleAttendu !== null && (int) ($infos['module']['id'] ?? 0) !== $moduleAttendu) {
+        // SOFTIO_MODULE_ID est obligatoire (vérifié par SoftioClient avant tout appel)
+        $moduleAttendu = (int) config('softio.sso.module_id');
+        if ((int) ($infos['module']['id'] ?? 0) !== $moduleAttendu) {
             throw new BusinessRuleException('Ce lien ne concerne pas le module Comptabilité.', 'softio_wrong_module');
         }
 

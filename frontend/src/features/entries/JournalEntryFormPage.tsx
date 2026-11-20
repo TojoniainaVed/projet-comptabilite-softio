@@ -275,14 +275,14 @@ export function JournalEntryFormPage() {
 
     <td className="px-2 py-3 text-right">
       <div className="text-xs text-ink-muted">Total débit</div>
-      <div className="font-bold tabular">
+      <div className="font-bold tabular" data-testid="total-debit">
         {formatNumber(totals.debit)}
       </div>
     </td>
 
     <td className="px-2 py-3 text-right">
       <div className="text-xs text-ink-muted">Total crédit</div>
-      <div className="font-bold tabular">
+      <div className="font-bold tabular" data-testid="total-credit">
         {formatNumber(totals.credit)}
       </div>
     </td>

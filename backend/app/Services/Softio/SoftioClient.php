@@ -65,8 +65,10 @@ class SoftioClient
                 'user_id' => $softioUserId,
                 'module_id' => config('softio.sso.module_id'),
             ]);
-        } catch (BusinessRuleException) {
-            return null;
+        } catch (BusinessRuleException $e) {
+            // Configuration incomplète : on refuse plutôt que de laisser l'accès ouvert indéfiniment.
+            // Seule une panne passagère de Softio laisse passer (null).
+            return $e->errorCode === 'softio_not_configured' ? false : null;
         }
 
         if ($response->status() === 404) {
@@ -79,7 +81,9 @@ class SoftioClient
     private function post(string $chemin, array $donnees): Response
     {
         $secret = (string) config('softio.sso.secret');
-        if ($secret === '') {
+        if ($secret === '' || config('softio.sso.module_id') === null) {
+            Log::error('Connexion Softio non configurée : SOFTIO_SSO_SECRET et SOFTIO_MODULE_ID sont obligatoires.');
+
             throw new BusinessRuleException('La connexion depuis Softio n\'est pas configurée.', 'softio_not_configured');
         }
 
