@@ -24,6 +24,7 @@ final class PermissionCatalog
         'entries' => ['view', 'create', 'update', 'validate', 'cancel', 'export'],
         'partners' => ['view', 'create', 'update'],
         'invoices' => ['view', 'create', 'update', 'validate', 'cancel', 'export'],
+        'credit_notes' => ['view', 'create', 'update', 'validate', 'cancel', 'export'],
         'payments' => ['view', 'create'],
         'expenses' => ['view', 'create', 'update', 'validate'],
         'reports' => ['view', 'export'],
@@ -36,10 +37,10 @@ final class PermissionCatalog
     ];
 
     /** @var list<string> */
-    private const ACCOUNTING_RESOURCES = [
-        'accounts', 'journals', 'fiscal_years', 'entries', 'partners',
-        'invoices', 'payments', 'expenses', 'reports',
-    ];
+   private const ACCOUNTING_RESOURCES = [
+    'accounts', 'journals', 'fiscal_years', 'entries', 'partners',
+    'invoices', 'credit_notes', 'payments', 'expenses', 'reports',
+];
 
     /** @return list<string> */
     public static function all(): array
@@ -125,10 +126,11 @@ final class PermissionCatalog
                 'scope' => self::COMPANY,
                 'description' => 'Gère les partenaires, les factures et les paiements.',
                 'permissions' => array_merge(
-                    ['accounts.view', 'journals.view'],
-                    self::accounting(only: ['partners', 'payments']),
-                    self::accounting(only: ['invoices'], exceptActions: ['cancel', 'export']),
-                ),
+    ['accounts.view', 'journals.view'],
+    self::accounting(only: ['partners', 'payments']),
+    self::accounting(only: ['invoices'], exceptActions: ['cancel', 'export']),
+    self::accounting(only: ['credit_notes'], exceptActions: ['cancel', 'validate', 'export']),
+),
             ],
             'auditor' => [
                 'name' => 'Lecteur / auditeur',

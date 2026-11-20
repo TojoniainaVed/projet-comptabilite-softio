@@ -22,7 +22,14 @@ class ExpenseRequest extends FormRequest
             'amount' => ['required', 'numeric', 'decimal:0,2', 'gt:0', 'max:9999999999999'],
             'account_id' => ['required', 'integer', Rule::exists('accounts', 'id')->where('company_id', $company)],
             'paid_from_account_id' => ['required', 'integer', Rule::exists('accounts', 'id')->where('company_id', $company)],
-            'partner_id' => ['nullable', 'integer', Rule::exists('partners', 'id')->where('company_id', $company)],
+          'partner_id' => [
+    'nullable',
+    'integer',
+    Rule::exists('partners', 'id')
+        ->where('company_id', $company)
+        ->where('type', 'supplier')
+        ->where('is_active', true),
+],
             'reference' => ['nullable', 'string', 'max:100'],
         ];
     }

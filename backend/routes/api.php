@@ -61,6 +61,11 @@ Route::prefix('v1')->group(function (): void {
         // Espace comptable (réservé aux comptes rattachés à une entreprise)
         // ---------------------------------------------------------------
         Route::middleware('company')->group(function (): void {
+             Route::get('company', [
+           \App\Http\Controllers\Api\V1\Accounting\CompanyController::class,
+           'show',
+          ]);
+
             Route::get('dashboard', Accounting\DashboardController::class);
 
             Route::apiResource('accounts', Accounting\AccountController::class)->except('destroy');
@@ -85,6 +90,17 @@ Route::prefix('v1')->group(function (): void {
             Route::post('invoices/{invoice}/cancel', [Accounting\InvoiceController::class, 'cancel']);
             Route::post('invoices/{invoice}/payments', [Accounting\InvoiceController::class, 'pay']);
             Route::apiResource('invoices', Accounting\InvoiceController::class);
+
+            // Avoirs clients et fournisseurs
+Route::get('credit-notes', [Accounting\CreditNoteController::class, 'index']);
+
+Route::post('credit-notes', [Accounting\CreditNoteController::class, 'store']);
+
+Route::get('credit-notes/{creditNote}', [Accounting\CreditNoteController::class, 'show'])
+    ->whereNumber('creditNote');
+
+Route::post('credit-notes/{creditNote}/post', [Accounting\CreditNoteController::class, 'post'])
+    ->whereNumber('creditNote');
 
             Route::apiResource('payments', Accounting\PaymentController::class)->only(['index', 'show']);
 

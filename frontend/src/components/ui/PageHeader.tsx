@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export interface Crumb {
   label: string
@@ -35,11 +36,26 @@ interface PageHeaderProps {
   description?: string
   breadcrumbs?: Crumb[]
   actions?: ReactNode
+  className?: string
+  variant?: 'default' | 'admin'
 }
 
-export function PageHeader({ title, description, breadcrumbs, actions }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  description,
+  breadcrumbs,
+  actions,
+  className,
+  variant = 'default',
+}: PageHeaderProps) {
   return (
-    <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div
+      className={cn(
+        'mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between',
+        variant === 'admin' && 'softio-admin-page-header',
+        className,
+      )}
+    >
       <div className="space-y-1">
         {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
         <h1 className="text-xl font-semibold text-ink">{title}</h1>

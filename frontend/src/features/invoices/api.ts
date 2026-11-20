@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api-client'
+import type { Company, Invoice, InvoiceType, Payment } from '@/types/api'
 import { createResource } from '@/lib/resource'
-import type { Invoice, InvoiceType, Payment } from '@/types/api'
 
 export interface InvoiceInput {
   type?: InvoiceType
@@ -54,3 +54,13 @@ export function useInvoiceActions() {
 
 export const invoiceBasePath = (kind: InvoiceType) =>
   kind === 'customer' ? '/sales/invoices' : '/purchases/invoices'
+
+export function useInvoiceCompany() {
+  return useQuery({
+    queryKey: ['invoice-company'],
+    queryFn: async () => {
+      const response = await api.get<{ data: Company }>('/company')
+      return response.data
+    },
+  })
+}

@@ -48,11 +48,11 @@ class CompanyController extends Controller
     }
 
     public function show(Company $company): CompanyResource
-    {
-        $this->authorize('view', $company);
+{
+    $this->authorize('view', $company);
 
-        return CompanyResource::make($company->loadCount('users'));
-    }
+    return CompanyResource::make($company->loadCount('users'));
+}
 
     public function update(CompanyRequest $request, Company $company): CompanyResource
     {

@@ -5,6 +5,7 @@ namespace App\Services\Accounting;
 use App\Exceptions\BusinessRuleException;
 use App\Models\Account;
 use App\Models\Expense;
+use App\Models\Partner;
 use App\Models\User;
 use App\Services\Audit\AuditLogger;
 use App\Support\Money;
@@ -21,8 +22,24 @@ class ExpenseService
     /** @param  array<string, mixed>  $data */
     public function saveDraft(array $data, User $user, ?Expense $expense = null): Expense
     {
+        
         if ($expense !== null && ! $expense->isDraft()) {
             throw new BusinessRuleException('Seule une dépense brouillon peut être modifiée.', 'expense_not_draft');
+        }
+        if (! empty($data['partner_id'])) {
+            $validSupplier = Partner::query()
+                ->whereKey($data['partner_id'])
+                ->where('company_id', $user->company_id)
+                ->where('type', Partner::TYPE_SUPPLIER)
+                ->where('is_active', true)
+                ->exists();
+
+            if (! $validSupplier) {
+                throw new BusinessRuleException(
+                    'Le partenaire associé à la dépense doit être un fournisseur actif de votre entreprise.',
+                    'invalid_expense_supplier'
+                );
+            }
         }
 
         $this->assertAccounts((int) $data['account_id'], (int) $data['paid_from_account_id']);

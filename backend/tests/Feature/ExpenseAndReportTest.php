@@ -123,4 +123,40 @@ class ExpenseAndReportTest extends FeatureTestCase
         $this->assertStringContainsString('40.00', $csv);
         $this->assertDatabaseHas('audit_logs', ['action' => 'report.exported']);
     }
+
+public function test_expense_partner_must_be_an_active_supplier_from_same_company(): void
+{
+    $company = $this->makeCompany();
+    $this->signIn('accountant', $company);
+
+    // Un fournisseur actif de la même entreprise doit être accepté.
+    $supplier = $this->makePartner($company, 'supplier');
+
+    $this->postJson('/api/v1/expenses', $this->expense($company, [
+        'partner_id' => $supplier->id,
+    ]))->assertCreated();
+
+    // Un client ne doit pas être accepté comme fournisseur d'une dépense.
+    $customer = $this->makePartner($company, 'customer');
+
+    $this->postJson('/api/v1/expenses', $this->expense($company, [
+        'partner_id' => $customer->id,
+    ]))->assertStatus(422)->assertJsonValidationErrors('partner_id');
+
+    // Un fournisseur inactif doit être refusé.
+    $inactiveSupplier = $this->makePartner($company, 'supplier');
+    $inactiveSupplier->update(['is_active' => false]);
+
+    $this->postJson('/api/v1/expenses', $this->expense($company, [
+        'partner_id' => $inactiveSupplier->id,
+    ]))->assertStatus(422)->assertJsonValidationErrors('partner_id');
+
+    // Un fournisseur appartenant à une autre entreprise doit être refusé.
+    $otherCompany = $this->makeCompany();
+    $foreignSupplier = $this->makePartner($otherCompany, 'supplier');
+
+    $this->postJson('/api/v1/expenses', $this->expense($company, [
+        'partner_id' => $foreignSupplier->id,
+    ]))->assertStatus(422)->assertJsonValidationErrors('partner_id');
+}
 }

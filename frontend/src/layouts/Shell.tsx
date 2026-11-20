@@ -31,9 +31,10 @@ interface ShellProps {
   nav: NavItem[]
   tone: 'light' | 'dark'
   footerLink?: ReactNode
+  className?: string
 }
 
-export function Shell({ brand, nav, tone, footerLink }: ShellProps) {
+export function Shell({ brand, nav, tone, footerLink, className }: ShellProps) {
   const { user, logout, can } = useAuth()
   const [open, setOpen] = useState(false)
   const location = useLocation()
@@ -199,7 +200,7 @@ export function Shell({ brand, nav, tone, footerLink }: ShellProps) {
   )
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className={cn('min-h-screen bg-canvas', dark && 'softio-admin-shell', className)}>
       <a
         href="#contenu"
         className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:rounded-control focus:bg-surface focus:px-3 focus:py-2"
@@ -207,7 +208,14 @@ export function Shell({ brand, nav, tone, footerLink }: ShellProps) {
         Aller au contenu
       </a>
 
-      <aside className="fixed inset-y-0 left-0 hidden w-64 lg:block">{sidebar}</aside>
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 hidden w-64 lg:block',
+          dark && 'softio-admin-sidebar',
+        )}
+      >
+        {sidebar}
+      </aside>
 
       <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-line bg-surface px-4 lg:hidden">
         <button
@@ -243,7 +251,10 @@ export function Shell({ brand, nav, tone, footerLink }: ShellProps) {
         </div>
       )}
 
-      <main id="contenu" className="min-w-0 w-full lg:pl-64">
+      <main
+        id="contenu"
+        className={cn('min-w-0 w-full', dark ? 'softio-admin-main lg:pl-64' : 'lg:pl-64')}
+      >
         <div className="w-full min-w-0 px-3 py-4 sm:px-4 lg:px-5">
           <Outlet />
         </div>

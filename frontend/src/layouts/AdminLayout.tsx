@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Logo } from '@/components/Logo'
+import '@/styles/admin.css'
 import {
   Building2,
   ClipboardList,
@@ -44,6 +45,7 @@ export function AdminLayout() {
   return (
     <Shell
       tone="dark"
+      className="softio-admin-shell"
       nav={nav}
       brand={
         <span className="flex items-center gap-2">
