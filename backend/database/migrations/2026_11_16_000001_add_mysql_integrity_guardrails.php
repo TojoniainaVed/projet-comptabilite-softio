@@ -69,7 +69,7 @@ return new class extends Migration
                 'expenses_amount_check' => 'expenses',
             };
 
-            DB::statement("ALTER TABLE {$table} DROP CHECK {$constraint}");
+            DB::statement("ALTER TABLE {$table} DROP CONSTRAINT {$constraint}");
         }
     }
 };

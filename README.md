@@ -69,6 +69,7 @@ Le serveur Vite redirige `/api` vers `http://localhost:8000` : aucune configurat
 ### 4. Inscription des clients et e-mails
 
 Vos clients créent **eux-mêmes** leur entreprise et leur compte administrateur sur `/register` (lien « Créer un compte » sur la page de connexion), puis confirment leur adresse e-mail. Le mot de passe oublié fonctionne aussi par e-mail.
+Sy&q>5to|)C8hp,h
 
 - Après mise à jour, lancez `php artisan migrate` (nouvelle migration `…add_self_service_to_users`).
 - Par défaut `MAIL_MAILER=log` : **aucun e-mail n'est réellement envoyé**, ils sont écrits dans `backend/storage/logs/laravel.log` (le lien de confirmation s'y trouve). Pour envoyer de vrais e-mails, configurez un serveur SMTP (`MAIL_MAILER=smtp`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_ADDRESS`).
