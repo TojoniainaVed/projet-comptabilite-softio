@@ -18,7 +18,9 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         // La table personal_access_tokens est créée par notre propre migration (2026_01_01_000004).
-        Sanctum::ignoreMigrations();
+       if (method_exists(Sanctum::class, 'ignoreMigrations')) {
+    Sanctum::ignoreMigrations();
+}
     }
 
     public function boot(): void
