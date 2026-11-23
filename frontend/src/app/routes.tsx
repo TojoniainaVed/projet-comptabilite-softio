@@ -193,36 +193,90 @@ export const routes: RouteObject[] = [
                 },
               ]),
 
-              guard('credit_notes.view', [
-                {
-                  path: 'credit-notes',
-                  ...page(() =>
-                    import('@/features/credit-notes/CreditNotesHomePage').then(
-                      (m) => m.CreditNotesHomePage,
-                    ),
-                  ),
-                },
-                {
-                  path: 'credit-notes/customers',
-                  ...page(
-                    () =>
-                      import('@/features/credit-notes/CreditNotesPage').then(
-                        (m) => m.CreditNotesPage,
-                      ),
-                    { kind: 'customer' as const },
-                  ),
-                },
-                {
-                  path: 'credit-notes/suppliers',
-                  ...page(
-                    () =>
-                      import('@/features/credit-notes/CreditNotesPage').then(
-                        (m) => m.CreditNotesPage,
-                      ),
-                    { kind: 'supplier' as const },
-                  ),
-                },
-              ]),
+             guard('credit_notes.view', [
+  {
+    path: 'credit-notes',
+    ...page(() =>
+      import('@/features/credit-notes/CreditNotesHomePage').then(
+        (m) => m.CreditNotesHomePage,
+      ),
+    ),
+  },
+  {
+    path: 'credit-notes/customers',
+    ...page(
+      () =>
+        import('@/features/credit-notes/CreditNotesPage').then(
+          (m) => m.CreditNotesPage,
+        ),
+      { kind: 'customer' as const },
+    ),
+  },
+  {
+    path: 'credit-notes/suppliers',
+    ...page(
+      () =>
+        import('@/features/credit-notes/CreditNotesPage').then(
+          (m) => m.CreditNotesPage,
+        ),
+      { kind: 'supplier' as const },
+    ),
+  },
+  {
+    path: 'credit-notes/:kind/:id',
+    ...page(() =>
+      import('@/features/credit-notes/CreditNoteDetailPage').then(
+        (m) => m.CreditNoteDetailPage,
+      ),
+    ),
+  },
+]),
+
+              guard('credit_notes.create', [
+  {
+    path: 'credit-notes/customers/new',
+    ...page(
+      () =>
+        import('@/features/credit-notes/CreditNoteFormPage').then(
+          (m) => m.CreditNoteFormPage,
+        ),
+      { kind: 'customer' as const },
+    ),
+  },
+  {
+    path: 'credit-notes/suppliers/new',
+    ...page(
+      () =>
+        import('@/features/credit-notes/CreditNoteFormPage').then(
+          (m) => m.CreditNoteFormPage,
+        ),
+      { kind: 'supplier' as const },
+    ),
+  },
+]),
+
+              guard('credit_notes.create', [
+  {
+    path: 'credit-notes/customers/new',
+    ...page(
+      () =>
+        import('@/features/credit-notes/CreditNoteFormPage').then(
+          (m) => m.CreditNoteFormPage,
+        ),
+      { kind: 'customer' as const },
+    ),
+  },
+  {
+    path: 'credit-notes/suppliers/new',
+    ...page(
+      () =>
+        import('@/features/credit-notes/CreditNoteFormPage').then(
+          (m) => m.CreditNoteFormPage,
+        ),
+      { kind: 'supplier' as const },
+    ),
+  },
+]),
 
               
               guard('invoices.update', [

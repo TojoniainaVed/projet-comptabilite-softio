@@ -1,10 +1,47 @@
+
 import { useNavigate } from 'react-router-dom'
-import { ArrowUpRight, CheckCircle2, Clock3, FileText, ShoppingCart } from 'lucide-react'
+import {
+  ArrowUpRight,
+  CheckCircle2,
+  Clock3,
+  FileText,
+  ShoppingCart,
+} from 'lucide-react'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, StatCard } from '@/components/ui/Card'
+import { creditNotesApi } from './api'
 
 export function CreditNotesHomePage() {
   const navigate = useNavigate()
+
+  // Récupération des avoirs clients et fournisseurs
+  const {
+    data: creditNotes,
+    isLoading,
+    isError,
+  } = creditNotesApi.useOptions()
+
+  const notes = creditNotes ?? []
+
+  // Calcul des indicateurs
+  const total = notes.length
+  const pending = notes.filter((note) => note.status === 'draft').length
+  const validated = notes.filter((note) => note.status === 'posted').length
+
+  const formatNumber = (value: number) =>
+    new Intl.NumberFormat('fr-FR').format(value)
+
+  const getStatValue = (value: number) => {
+    if (isLoading) return '...'
+    if (isError) return '—'
+    return formatNumber(value)
+  }
+
+  const getStatHint = () => {
+    if (isLoading) return 'Chargement des données...'
+    if (isError) return 'Impossible de charger les données'
+    return 'Avoirs clients et fournisseurs'
+  }
 
   return (
     <div>
@@ -79,22 +116,22 @@ export function CreditNotesHomePage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard
           label="Total des avoirs"
-          value="—"
-          hint="En attente de connexion aux données"
+          value={getStatValue(total)}
+          hint={getStatHint()}
           icon={<FileText className="size-5" />}
         />
 
         <StatCard
           label="En attente"
-          value="—"
-          hint="En attente de connexion aux données"
+          value={getStatValue(pending)}
+          hint={getStatHint()}
           icon={<Clock3 className="size-5" />}
         />
 
         <StatCard
           label="Validés"
-          value="—"
-          hint="En attente de connexion aux données"
+          value={getStatValue(validated)}
+          hint={getStatHint()}
           icon={<CheckCircle2 className="size-5" />}
         />
       </div>

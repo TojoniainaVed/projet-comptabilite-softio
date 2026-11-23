@@ -1,4 +1,6 @@
-﻿import { PageHeader } from '@/components/ui/PageHeader'
+﻿
+import { Link } from 'react-router-dom'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { DataTable, type Column } from '@/components/ui/DataTable'
 import { Pagination } from '@/components/ui/Pagination'
@@ -16,7 +18,16 @@ export function CreditNotesPage({ kind }: { kind: InvoiceType }) {
   const isCustomer = kind === 'customer'
   const title = isCustomer ? 'Avoirs clients' : 'Avoirs fournisseurs'
 
+  const createPath = isCustomer
+    ? '/credit-notes/customers/new'
+    : '/credit-notes/suppliers/new'
+
+  const createLabel = isCustomer
+    ? 'Créer un avoir client'
+    : 'Créer un avoir fournisseur'
+
   const list = useListParams()
+
   const query = creditNotesApi.useList({
     ...list.params,
     type: kind,
@@ -28,9 +39,12 @@ export function CreditNotesPage({ kind }: { kind: InvoiceType }) {
       key: 'number',
       header: 'N° avoir',
       cell: (note) => (
-        <span className="font-mono font-medium">
-          {note.number ?? 'Brouillon'}
-        </span>
+        <Link
+          to={`/credit-notes/${kind}/${note.id}`}
+          className="font-mono font-semibold text-primary hover:underline"
+        >
+          {note.number ?? `Brouillon #${note.id}`}
+        </Link>
       ),
     },
     {
@@ -88,6 +102,15 @@ export function CreditNotesPage({ kind }: { kind: InvoiceType }) {
           { label: title },
         ]}
       />
+
+      <div className="mb-4 flex justify-end">
+        <Link
+          to={createPath}
+          className="inline-flex min-h-10 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+        >
+          {createLabel}
+        </Link>
+      </div>
 
       <Card padded={false}>
         <div className="flex flex-col gap-3 border-b border-line p-4 sm:flex-row sm:items-center sm:justify-between">
