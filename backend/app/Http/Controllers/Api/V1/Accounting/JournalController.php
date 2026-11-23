@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Accounting;
 
 use App\Http\Controllers\Controller;
+use App\Exceptions\BusinessRuleException;
 use App\Http\Requests\JournalRequest;
 use App\Http\Resources\JournalResource;
 use App\Models\Journal;
@@ -40,7 +41,17 @@ class JournalController extends Controller
     {
         $this->authorize('journals.update');
 
-        $journal->fill($request->validated());
+        $data = $request->validated();
+
+        // La numérotation ne peut qu'avancer : reculer créerait des références en double.
+        if (isset($data['next_number']) && $data['next_number'] < $journal->next_number) {
+            throw new BusinessRuleException(
+                "Le prochain numéro ne peut pas être inférieur à {$journal->next_number} (numéros déjà attribués).",
+                'sequence_backwards',
+            );
+        }
+
+        $journal->fill($data);
         $changed = array_keys($journal->getDirty());
         $journal->save();
 

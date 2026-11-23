@@ -68,6 +68,13 @@ Route::prefix('v1')->group(function (): void {
            'show',
           ]);
 
+            Route::put('company', [Accounting\CompanyController::class, 'update']);
+            Route::get('accounting-defaults', [Accounting\AccountingDefaultController::class, 'show']);
+            Route::put('accounting-defaults', [Accounting\AccountingDefaultController::class, 'update']);
+            Route::apiResource('taxes', Accounting\TaxController::class)->only(['index', 'store', 'update']);
+            Route::apiResource('payment-terms', Accounting\PaymentTermController::class)->only(['index', 'store', 'update'])
+                ->parameters(['payment-terms' => 'paymentTerm']);
+
             Route::get('dashboard', Accounting\DashboardController::class);
 
             Route::apiResource('accounts', Accounting\AccountController::class)->except('destroy');

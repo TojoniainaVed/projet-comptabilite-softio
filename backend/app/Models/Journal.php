@@ -11,7 +11,7 @@ class Journal extends Model
 
     public const TYPES = ['sales', 'purchases', 'bank', 'cash', 'general'];
 
-    protected $fillable = ['company_id', 'code', 'name', 'type', 'is_active'];
+    protected $fillable = ['company_id', 'code', 'name', 'type', 'next_number', 'is_active'];
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $casts = ['is_active' => 'boolean', 'next_number' => 'integer'];
 }

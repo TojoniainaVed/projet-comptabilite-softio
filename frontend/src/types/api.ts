@@ -88,7 +88,33 @@ export interface Journal {
   code: string
   name: string
   type: JournalType
+  next_number: number
   is_active: boolean
+}
+
+export interface Tax {
+  id: number
+  name: string
+  rate: string
+  scope: 'sales' | 'purchases'
+  is_active: boolean
+}
+
+export interface PaymentTerm {
+  id: number
+  name: string
+  days: number
+  end_of_month: boolean
+  is_active: boolean
+}
+
+export interface AccountingDefaults {
+  receivable_account_id: number | null
+  payable_account_id: number | null
+  vat_collected_account_id: number | null
+  vat_deductible_account_id: number | null
+  bank_account_id: number | null
+  cash_account_id: number | null
 }
 
 export interface FiscalYear {

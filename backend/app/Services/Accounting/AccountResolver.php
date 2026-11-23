@@ -4,7 +4,9 @@ namespace App\Services\Accounting;
 
 use App\Exceptions\BusinessRuleException;
 use App\Models\Account;
+use App\Models\AccountingDefault;
 use App\Models\Journal;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Retrouve les comptes et journaux « techniques » de l'entreprise courante
@@ -14,6 +16,20 @@ class AccountResolver
 {
     public function byCategory(string $category): Account
     {
+        // Compte choisi dans Paramètres comptables > Comptes par défaut (hors contexte utilisateur : ignoré).
+        $column = AccountingDefault::FIELDS[$category]['column'] ?? null;
+        if ($column !== null && Auth::user()?->company_id !== null) {
+            $configuredId = AccountingDefault::query()->value($column);
+            $configured = $configuredId === null ? null : Account::query()
+                ->where('is_active', true)
+                ->where('is_group', false)
+                ->find($configuredId);
+
+            if ($configured !== null) {
+                return $configured;
+            }
+        }
+
         $account = Account::query()
             ->where('category', $category)
             ->where('is_active', true)

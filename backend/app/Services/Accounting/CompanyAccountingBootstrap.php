@@ -6,6 +6,8 @@ use App\Models\Account;
 use App\Models\Company;
 use App\Models\FiscalYear;
 use App\Models\Journal;
+use App\Models\PaymentTerm;
+use App\Models\Tax;
 
 /**
  * Prépare la comptabilité d'une nouvelle entreprise : plan comptable de départ, journaux et exercice courant.
@@ -60,6 +62,20 @@ class CompanyAccountingBootstrap
             Journal::withoutGlobalScopes()->firstOrCreate(
                 ['company_id' => $company->id, 'code' => $code],
                 ['name' => $name, 'type' => $type, 'is_active' => true],
+            );
+        }
+
+        foreach ([['TVA 20 % (ventes)', 'sales'], ['TVA 20 % (achats)', 'purchases']] as [$name, $scope]) {
+            Tax::withoutGlobalScopes()->firstOrCreate(
+                ['company_id' => $company->id, 'name' => $name, 'scope' => $scope],
+                ['rate' => 20, 'is_active' => true],
+            );
+        }
+
+        foreach ([['Paiement comptant', 0, false], ['15 jours', 15, false], ['30 jours', 30, false], ['45 jours fin de mois', 45, true]] as [$name, $days, $endOfMonth]) {
+            PaymentTerm::withoutGlobalScopes()->firstOrCreate(
+                ['company_id' => $company->id, 'name' => $name],
+                ['days' => $days, 'end_of_month' => $endOfMonth, 'is_active' => true],
             );
         }
 

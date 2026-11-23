@@ -15,6 +15,7 @@ class JournalResource extends JsonResource
             'code' => $this->code,
             'name' => $this->name,
             'type' => $this->type,
+            'next_number' => $this->next_number,
             'is_active' => $this->is_active,
         ];
     }

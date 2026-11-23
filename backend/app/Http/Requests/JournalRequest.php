@@ -24,6 +24,7 @@ class JournalRequest extends FormRequest
             ],
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', Rule::in(Journal::TYPES)],
+            'next_number' => ['sometimes', 'integer', 'min:1', 'max:999999999'],
             'is_active' => ['sometimes', 'boolean'],
         ];
     }
