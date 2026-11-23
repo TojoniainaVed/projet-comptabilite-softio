@@ -11,9 +11,16 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
+    public function register(): void
+    {
+        // La table personal_access_tokens est créée par notre propre migration (2026_01_01_000004).
+        Sanctum::ignoreMigrations();
+    }
+
     public function boot(): void
     {
         Validator::resolver(fn ($translator, $data, $rules, $messages, $attributes) => new EmailSafeValidator($translator, $data, $rules, $messages, $attributes));

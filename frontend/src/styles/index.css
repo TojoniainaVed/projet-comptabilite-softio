@@ -28,6 +28,19 @@
 
   --shadow-card: 0 4px 14px rgb(38 67 72 / 0.04);
   --shadow-overlay: 0 24px 60px rgb(20 30 40 / 0.28);
+
+  /* Apparition douce des pages */
+  --animate-fade-in: fade-in 220ms ease-out;
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 @layer base {
   html {
