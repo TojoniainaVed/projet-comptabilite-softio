@@ -157,6 +157,74 @@ class ReportService
     }
 
     /**
+     * Grand livre d'un compte : solde d'ouverture (avant « from »), mouvements de la période avec solde progressif.
+     *
+     * @return array<string, mixed>|null null si le compte n'appartient pas à l'entreprise
+     */
+    public function generalLedger(int $companyId, int $accountId, ?string $from = null, ?string $to = null): ?array
+    {
+        $account = Account::query()->where('company_id', $companyId)->find($accountId);
+        if ($account === null) {
+            return null;
+        }
+
+        $base = fn () => DB::table('journal_entry_lines as l')
+            ->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')
+            ->where('e.company_id', $companyId)
+            ->where('l.account_id', $account->id)
+            ->whereIn('e.status', ['posted', 'reversed']);
+
+        $opening = 0;
+        if ($from) {
+            $before = $base()->whereDate('e.entry_date', '<', $from)
+                ->selectRaw('COALESCE(SUM(l.debit), 0) as debit, COALESCE(SUM(l.credit), 0) as credit')
+                ->first();
+            $opening = Money::toCents($before->debit) - Money::toCents($before->credit);
+        }
+
+        $rows = $base()
+            ->when($from, fn ($q) => $q->whereDate('e.entry_date', '>=', $from))
+            ->when($to, fn ($q) => $q->whereDate('e.entry_date', '<=', $to))
+            ->orderBy('e.entry_date')->orderBy('e.id')->orderBy('l.id')
+            ->selectRaw('e.id as entry_id, e.entry_date, e.reference, e.description, l.label, l.debit, l.credit')
+            ->get();
+
+        $balance = $opening;
+        $debit = 0;
+        $credit = 0;
+        $lines = [];
+
+        foreach ($rows as $row) {
+            $d = Money::toCents($row->debit);
+            $c = Money::toCents($row->credit);
+            $debit += $d;
+            $credit += $c;
+            $balance += $d - $c;
+
+            $lines[] = [
+                'entry_id' => $row->entry_id,
+                'date' => (string) $row->entry_date,
+                'reference' => $row->reference,
+                'label' => $row->label ?: $row->description,
+                'debit' => Money::fromCents($d),
+                'credit' => Money::fromCents($c),
+                'balance' => Money::fromCents($balance),
+            ];
+        }
+
+        return [
+            'account' => ['id' => $account->id, 'code' => $account->code, 'name' => $account->name, 'type' => $account->type],
+            'opening_balance' => Money::fromCents($opening),
+            'lines' => $lines,
+            'totals' => [
+                'debit' => Money::fromCents($debit),
+                'credit' => Money::fromCents($credit),
+                'closing_balance' => Money::fromCents($balance),
+            ],
+        ];
+    }
+
+    /**
      * Mouvements cumulés par compte.
      *
      * @param  list<string>|null  $types

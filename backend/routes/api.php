@@ -113,6 +113,7 @@ Route::post('credit-notes/{creditNote}/post', [Accounting\CreditNoteController::
                 Route::get('trial-balance', [Accounting\ReportController::class, 'trialBalance']);
                 Route::get('income-statement', [Accounting\ReportController::class, 'incomeStatement']);
                 Route::get('balance-sheet', [Accounting\ReportController::class, 'balanceSheet']);
+                Route::get('general-ledger', [Accounting\ReportController::class, 'generalLedger']);
                 Route::get('treasury', [Accounting\ReportController::class, 'treasury']);
             });
         });

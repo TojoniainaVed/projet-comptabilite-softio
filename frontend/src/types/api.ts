@@ -350,6 +350,21 @@ export interface BalanceSheetReport {
   balanced: boolean
 }
 
+export interface GeneralLedgerReport {
+  account: { id: number; code: string; name: string; type: AccountType }
+  opening_balance: string
+  lines: {
+    entry_id: number
+    date: string
+    reference: string | null
+    label: string | null
+    debit: string
+    credit: string
+    balance: string
+  }[]
+  totals: { debit: string; credit: string; closing_balance: string }
+}
+
 export interface TreasuryReport {
   accounts: { account_id: number; code: string; name: string; category: string; balance: string }[]
   total: string
