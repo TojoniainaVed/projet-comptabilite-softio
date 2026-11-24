@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Admin;
 use App\Http\Controllers\Api\V1\Auth;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\PlatformController;
+use App\Http\Controllers\Api\V1\PreferencesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,6 +34,7 @@ Route::prefix('v1')->group(function (): void {
     // Authentifié et compte actif
     Route::middleware(['auth:sanctum', 'active', 'softio', 'throttle:api'])->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me']);
+        Route::put('auth/preferences', [PreferencesController::class, 'update']);
         Route::post('auth/logout', [AuthController::class, 'logout']);
 
         // ---------------------------------------------------------------

@@ -30,6 +30,7 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
         'email_verified_at' => 'datetime',
         'must_verify_email' => 'boolean',
+        'preferences' => 'array',
     ];
 
     /** Les adresses e-mail sont toujours enregistrées en minuscules. */

@@ -40,8 +40,37 @@ export interface User {
   role: Pick<Role, 'id' | 'slug' | 'name' | 'scope'>
 }
 
+export type ThemeMode = 'light' | 'dark' | 'system'
+export type AccentColor = 'teal' | 'blue' | 'violet' | 'orange' | 'rose' | 'slate'
+export type SidebarStyle = 'green' | 'accent' | 'dark' | 'light'
+
+export type StatusKey = 'draft' | 'validated' | 'paid' | 'cancelled' | 'reversed'
+export type StatusColorName =
+  | 'black'
+  | 'gray'
+  | 'green'
+  | 'teal'
+  | 'blue'
+  | 'violet'
+  | 'rose'
+  | 'red'
+  | 'orange'
+export type StatusColors = Record<StatusKey, StatusColorName>
+
+/** Préférences d'interface d'un utilisateur (enregistrées dans son compte). */
+export interface UserPreferences {
+  theme: ThemeMode
+  accent: AccentColor
+  sidebar: SidebarStyle
+  density: 'comfortable' | 'compact'
+  font_size: 'small' | 'normal' | 'large'
+  sidebar_collapsed: boolean
+  status_colors: StatusColors
+}
+
 export interface AuthUser extends User {
   permissions: string[]
+  preferences?: UserPreferences
   /** Compte venu de Softio (projet principal) : la déconnexion ramène vers Softio. */
   from_softio?: boolean
 }

@@ -20,7 +20,7 @@ import { z } from 'zod'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, StatCard } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
+import { StatusBadge } from '@/components/ui/StatusBadges'
 import { DataTable, type Column } from '@/components/ui/DataTable'
 import { Pagination } from '@/components/ui/Pagination'
 import { SearchInput } from '@/components/ui/SearchInput'
@@ -154,9 +154,10 @@ export function ExpensesPage() {
       key: 'status',
       header: 'Statut',
       cell: (e) => (
-        <Badge tone={e.status === 'posted' ? 'success' : 'warning'}>
-          {e.status === 'posted' ? 'Validée' : 'Brouillon'}
-        </Badge>
+        <StatusBadge
+          status={e.status === 'posted' ? 'validated' : 'draft'}
+          label={e.status === 'posted' ? 'Validée' : 'Brouillon'}
+        />
       ),
     },
     {

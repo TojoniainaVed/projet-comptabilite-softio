@@ -97,6 +97,7 @@ class AuthController extends Controller
             'permissions' => $user->permissionSlugs(),
             // Compte venu de Softio : à la déconnexion, le front le renvoie vers Softio
             'from_softio' => $user->softio_user_id !== null,
+            'preferences' => \App\Support\UserPreferences::sanitize($user->preferences),
         ];
     }
 }

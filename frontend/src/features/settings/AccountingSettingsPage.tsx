@@ -6,7 +6,6 @@ import { z } from 'zod'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
 import { Tabs } from '@/components/ui/Tabs'
 import { DataTable, type Column } from '@/components/ui/DataTable'
 import { Modal } from '@/components/ui/Modal'
@@ -20,7 +19,7 @@ import { InlineAlert } from '@/components/feedback/States'
 import { useToast } from '@/components/feedback/Toast'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { journalTypeLabels, optionsOf } from '@/lib/labels'
-import { ActiveBadge } from '@/components/ui/StatusBadges'
+import { ActiveBadge, StatusBadge } from '@/components/ui/StatusBadges'
 import { applyApiErrors, errorMessage } from '@/lib/form-errors'
 import { formatDate } from '@/lib/utils'
 import { fiscalYearsApi, journalsApi } from '@/features/settings/api'
@@ -313,9 +312,10 @@ function FiscalYearsPanel() {
       key: 'status',
       header: 'Statut',
       cell: (f) => (
-        <Badge tone={f.status === 'open' ? 'success' : 'neutral'}>
-          {f.status === 'open' ? 'Ouvert' : 'Clôturé'}
-        </Badge>
+        <StatusBadge
+          status={f.status === 'open' ? 'validated' : 'draft'}
+          label={f.status === 'open' ? 'Ouvert' : 'Clôturé'}
+        />
       ),
     },
     ...(can('fiscal_years.update')

@@ -1,0 +1,139 @@
+/*
+ * Personnalisation de l'espace de travail.
+ * Les attributs data-* de <html> sont posés par applyPreferences() (preferences.ts).
+ * Les couleurs de l'application sont des variables (--color-*) : les redéfinir ici suffit,
+ * aucun composant n'a besoin de connaître le thème.
+ */
+
+/* ---------- Couleur d'accent ---------- */
+html[data-accent='teal'] {
+  --accent: #087d79;
+}
+html[data-accent='blue'] {
+  --accent: #2563eb;
+}
+html[data-accent='violet'] {
+  --accent: #7c3aed;
+}
+html[data-accent='orange'] {
+  --accent: #ea580c;
+}
+html[data-accent='rose'] {
+  --accent: #e11d48;
+}
+html[data-accent='slate'] {
+  --accent: #475569;
+}
+
+/* Thème clair : l'accent par défaut garde la palette d'origine ; les autres sont dérivés de --accent. */
+html[data-theme='light'][data-accent]:not([data-accent='teal']) {
+  --color-brand-50: color-mix(in oklab, var(--accent) 9%, white);
+  --color-brand-100: color-mix(in oklab, var(--accent) 18%, white);
+  --color-brand-200: color-mix(in oklab, var(--accent) 35%, white);
+  --color-brand-500: color-mix(in oklab, var(--accent) 92%, white);
+  --color-brand-600: var(--accent);
+  --color-brand-700: color-mix(in oklab, var(--accent) 86%, black);
+  --color-brand-800: color-mix(in oklab, var(--accent) 70%, black);
+}
+
+/* ---------- Thème sombre ---------- */
+html[data-theme='dark'] {
+  --color-canvas: #0f1719;
+  --color-surface: #172125;
+  --color-line: #28373c;
+  --color-ink: #e6eef0;
+  --color-ink-muted: #9fb1b7;
+
+  --color-brand-50: color-mix(in oklab, var(--accent) 22%, #172125);
+  --color-brand-100: color-mix(in oklab, var(--accent) 32%, #172125);
+  --color-brand-200: color-mix(in oklab, var(--accent) 48%, #172125);
+  --color-brand-500: color-mix(in oklab, var(--accent) 90%, white);
+  --color-brand-600: color-mix(in oklab, var(--accent) 88%, white);
+  --color-brand-700: color-mix(in oklab, var(--accent) 62%, white);
+  --color-brand-800: color-mix(in oklab, var(--accent) 45%, white);
+
+  --shadow-card: 0 4px 14px rgb(0 0 0 / 0.35);
+  --shadow-overlay: 0 24px 60px rgb(0 0 0 / 0.6);
+}
+
+/* ---------- Menu latéral ---------- */
+:root {
+  --sb-bg: var(--color-surface);
+  --sb-fg: var(--color-ink);
+  --sb-muted: var(--color-ink-muted);
+  --sb-hover: var(--color-canvas);
+  --sb-active-bg: var(--color-brand-50);
+  --sb-active-fg: var(--color-brand-700);
+  --sb-line: var(--color-line);
+}
+
+html[data-sidebar='green'],
+html[data-sidebar='accent'],
+html[data-sidebar='dark'] {
+  --sb-fg: #ffffff;
+  --sb-muted: rgb(255 255 255 / 0.74);
+  --sb-hover: rgb(255 255 255 / 0.1);
+  --sb-active-bg: rgb(255 255 255 / 0.2);
+  --sb-active-fg: #ffffff;
+  --sb-line: rgb(255 255 255 / 0.16);
+}
+html[data-sidebar='green'] {
+  --sb-bg: #075d5a;
+}
+html[data-sidebar='accent'] {
+  --sb-bg: color-mix(in oklab, var(--accent) 82%, black);
+}
+html[data-sidebar='dark'] {
+  --sb-bg: #16232a;
+}
+
+/* Le logo a des couleurs fixes : en blanc sur un fond coloré ou sombre. */
+html[data-sidebar='green'] .softio-sidebar .sb-brand img,
+html[data-sidebar='accent'] .softio-sidebar .sb-brand img,
+html[data-sidebar='dark'] .softio-sidebar .sb-brand img,
+html[data-theme='dark'][data-sidebar='light'] .softio-sidebar .sb-brand img,
+html[data-theme='dark'] .softio-topbar .sb-brand img {
+  filter: brightness(0) invert(1);
+}
+
+/* ---------- Densité ---------- */
+html[data-density='compact'] table th,
+html[data-density='compact'] table td {
+  padding-block: 0.3rem;
+}
+html[data-density='compact'] .softio-sidebar nav a,
+html[data-density='compact'] .softio-sidebar nav button {
+  padding-block: 0.3rem;
+}
+
+/* ---------- Taille du texte (toute l'interface suit : les tailles sont en rem) ---------- */
+html[data-font='small'] {
+  font-size: 14px;
+}
+html[data-font='normal'] {
+  font-size: 16px;
+}
+html[data-font='large'] {
+  font-size: 18px;
+}
+
+/* Les transitions de thème restent discrètes et respectent « réduire les animations ». */
+@media (prefers-reduced-motion: no-preference) {
+  body,
+  .softio-sidebar {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+}
+
+/* ---------- Pastilles de statut : la couleur (--st) vient des réglages de l'utilisateur ---------- */
+.status-badge {
+  color: var(--st);
+  background-color: color-mix(in oklab, var(--st) 14%, transparent);
+  border-color: color-mix(in oklab, var(--st) 40%, transparent);
+}
+html[data-theme='dark'] .status-badge {
+  color: color-mix(in oklab, var(--st) 55%, white);
+  background-color: color-mix(in oklab, var(--st) 28%, transparent);
+}

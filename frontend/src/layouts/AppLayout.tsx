@@ -132,17 +132,19 @@ export function AppLayout() {
       brand={
         <span className="flex items-center gap-2">
           <Logo className="h-8" />
-          <span className="text-xs font-medium text-ink-muted">Comptabilité</span>
+          <span className="text-xs font-medium text-[color:var(--sb-muted)]">Comptabilité</span>
         </span>
       }
+      brandCompact={<Logo variant="icon" className="h-8" />}
       footerLink={
         showAdmin ? (
           <Link
             to="/admin"
-            className="flex items-center gap-2 text-xs font-medium text-brand-700 hover:underline"
+            title="Espace administration"
+            className="flex items-center gap-2 text-xs font-medium text-[color:var(--sb-fg)] hover:underline group-data-[compact=true]/sb:justify-center"
           >
             <ShieldCheck className="size-4" aria-hidden="true" />
-            Espace administration
+            <span className="group-data-[compact=true]/sb:sr-only">Espace administration</span>
           </Link>
         ) : undefined
       }
